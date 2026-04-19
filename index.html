@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FabriQ — İstehsal İdarəetməsi</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0f; --s1:#161618; --s2:#1e1e22; --s3:#26262c;
+  --b1:rgba(255,255,255,.06); --b2:rgba(255,255,255,.11);
+  --t1:#eeeae4; --t2:#8b8894; --t3:#4e4c58;
+  --acc:#c4b0ff; --acc-bg:rgba(196,176,255,.1);
+  --grn:#5ddba8; --grn-bg:rgba(93,219,168,.1);
+  --amb:#f5c842; --amb-bg:rgba(245,200,66,.1);
+  --red:#f06b6b; --red-bg:rgba(240,107,107,.1);
+  --blu:#5badf0; --blu-bg:rgba(91,173,240,.1);
+  --f:'DM Sans',sans-serif; --m:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);display:flex;flex-direction:column}
+
+/* ── TOP NAV ── */
+.topnav{background:var(--s1);border-bottom:1px solid var(--b1);padding:0 24px;display:flex;align-items:center;gap:0;flex-shrink:0;height:52px}
+.logo-n{font-size:16px;font-weight:500;letter-spacing:-.3px;margin-right:24px;flex-shrink:0}
+.logo-n em{font-style:normal;color:var(--acc)}
+.nav-tabs{display:flex;align-items:stretch;gap:0;flex:1}
+.ntab{display:flex;align-items:center;gap:8px;padding:0 18px;height:52px;cursor:pointer;font-size:13px;color:var(--t3);border-bottom:2px solid transparent;transition:all .13s;white-space:nowrap;user-select:none;flex-shrink:0}
+.ntab:hover{color:var(--t2)}
+.ntab.active{color:var(--t1);border-bottom-color:var(--c,var(--acc))}
+.ntab-pip{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ntab-badge{font-family:var(--m);font-size:10px;padding:1px 6px;border-radius:4px;background:var(--s3);color:var(--t3);transition:all .13s}
+.ntab.active .ntab-badge{color:var(--c,var(--acc));background:color-mix(in srgb,var(--c,var(--acc)) 15%,transparent)}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
+.btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:7px;font-size:12px;font-family:var(--f);cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);white-space:nowrap;transition:all .13s}
+.btn:hover{background:var(--s2);color:var(--t1)}
+.btn:active{transform:scale(.97)}
+.btn-a{background:var(--acc-bg);border-color:rgba(196,176,255,.2);color:var(--acc)}
+.btn-a:hover{background:rgba(196,176,255,.17)}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;cursor:pointer;flex-shrink:0}
+
+/* ── BODY LAYOUT ── */
+.app-body{flex:1;display:flex;overflow:hidden}
+
+/* ── LEFT PANEL ── */
+.left{width:300px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+.left-hdr{padding:16px 18px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.left-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+
+/* Fabrika ümumi doluluq */
+.factory-card{background:var(--s2);border-radius:11px;padding:14px 16px;margin-bottom:0}
+.fc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.fc-label{font-size:12px;font-weight:500;color:var(--t1)}
+.fc-pct{font-family:var(--m);font-size:22px;font-weight:500;line-height:1}
+.fc-bar-bg{height:6px;border-radius:4px;background:var(--s3);margin-bottom:8px;overflow:hidden}
+.fc-bar{height:100%;border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.fc-subs{display:flex;gap:12px}
+.fc-sub{font-size:10px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.fc-sub-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* Sektor listesi */
+.sector-list{flex:1;overflow-y:auto;padding:12px}
+.sector-list::-webkit-scrollbar{width:3px}
+.sector-list::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+.sec-card{background:var(--s2);border:1px solid var(--b1);border-radius:11px;padding:14px 15px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.sec-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--acc));opacity:0;transition:opacity .15s;border-radius:3px 0 0 3px}
+.sec-card:hover{border-color:var(--b2);background:var(--s3)}
+.sec-card:hover::before{opacity:.5}
+.sec-card.active{border-color:color-mix(in srgb,var(--c,var(--acc)) 40%,var(--b1));background:color-mix(in srgb,var(--c,var(--acc)) 6%,var(--s2))}
+.sec-card.active::before{opacity:1}
+.sc-top{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.sc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sc-info{flex:1;min-width:0}
+.sc-name{font-size:13px;font-weight:500;color:var(--t1)}
+.sc-orders{font-size:11px;color:var(--t3);margin-top:2px}
+.sc-pct-big{font-family:var(--m);font-size:18px;font-weight:500;line-height:1;flex-shrink:0}
+.sc-bar-bg{height:4px;border-radius:3px;background:var(--s3);margin-bottom:7px;overflow:hidden}
+.sc-bar{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.sc-tags{display:flex;gap:6px;flex-wrap:wrap}
+.sc-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--s3);color:var(--t3);font-family:var(--m)}
+
+/* ── RIGHT PANEL ── */
+.right{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* Etap kartları */
+.etap-strip{background:var(--s1);border-bottom:1px solid var(--b1);padding:14px 20px;flex-shrink:0;overflow-x:auto}
+.etap-strip::-webkit-scrollbar{height:0}
+.etap-row{display:flex;gap:9px;min-width:max-content}
+.e-card{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px 15px;width:148px;flex-shrink:0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.e-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--acc));opacity:0;transition:opacity .15s}
+.e-card:hover{border-color:var(--b2);background:var(--s3)}
+.e-card:hover::before{opacity:.5}
+.e-card.on{border-color:color-mix(in srgb,var(--c,var(--acc)) 50%,var(--b1));background:color-mix(in srgb,var(--c,var(--acc)) 8%,var(--s2))}
+.e-card.on::before{opacity:1}
+.ec-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.ec-nm{font-size:11.5px;font-weight:500;color:var(--t1)}
+.ec-cnt{font-family:var(--m);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--s3);color:var(--t3)}
+.e-card.on .ec-cnt{background:color-mix(in srgb,var(--c,var(--acc)) 20%,transparent);color:var(--c,var(--acc))}
+.ec-bar-bg{height:4px;border-radius:3px;background:var(--s3);margin-bottom:8px;overflow:hidden}
+.ec-bar{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.ec-bot{display:flex;align-items:baseline;justify-content:space-between}
+.ec-pct{font-family:var(--m);font-size:16px;font-weight:500;line-height:1}
+.ec-st{font-size:9px;text-align:right;line-height:1.4}
+.ec-st b{display:block;font-weight:400;font-size:10px;color:var(--t2)}
+
+/* Content header */
+.ch{background:var(--s1);border-bottom:1px solid var(--b1);padding:11px 20px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+.ch-title{font-size:13px;font-weight:500;flex:1}
+.srch{position:relative}
+.srch input{background:var(--s2);border:1px solid var(--b1);border-radius:7px;padding:6px 12px 6px 29px;font-size:12px;font-family:var(--f);color:var(--t1);width:175px;outline:none;transition:all .15s}
+.srch input:focus{border-color:var(--b2);width:205px}
+.srch input::placeholder{color:var(--t3)}
+.srch-ic{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:12px;pointer-events:none}
+.sel{background:var(--s2);border:1px solid var(--b1);border-radius:7px;padding:6px 9px;font-size:12px;font-family:var(--f);color:var(--t2);outline:none;cursor:pointer}
+
+/* Company list */
+.list-area{flex:1;overflow-y:auto;padding:14px 20px;display:flex;flex-direction:column;gap:9px}
+.list-area::-webkit-scrollbar{width:3px}
+.list-area::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+.co-card{background:var(--s1);border:1px solid var(--b1);border-radius:11px;overflow:hidden;transition:border-color .15s}
+.co-card:hover{border-color:var(--b2)}
+.co-card.exp{border-color:var(--b2)}
+.co-hdr{display:flex;align-items:center;gap:13px;padding:13px 17px;cursor:pointer;user-select:none;transition:background .13s}
+.co-hdr:hover{background:rgba(255,255,255,.018)}
+.co-av{width:36px;height:36px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500}
+.co-info{flex:1;min-width:0}
+.co-nm{font-size:13px;font-weight:500}
+.co-meta{font-size:11px;color:var(--t3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.co-pills{display:flex;gap:7px;flex-shrink:0}
+.cpill{display:flex;flex-direction:column;align-items:center;padding:4px 9px;border-radius:7px;background:var(--s2);min-width:40px}
+.cpill-v{font-family:var(--m);font-size:13px;font-weight:500;line-height:1}
+.cpill-l{font-size:9px;color:var(--t3);margin-top:2px}
+.co-chev{width:18px;height:18px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.co-card.exp .co-chev{transform:rotate(180deg)}
+
+.co-body{border-top:1px solid var(--b1);max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.4,0,.2,1)}
+.co-card.exp .co-body{max-height:700px}
+
+.orders-tbl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+.orders-tbl th{background:var(--bg);padding:8px 17px;text-align:left;font-size:9.5px;font-weight:500;letter-spacing:.09em;color:var(--t3);text-transform:uppercase;border-bottom:1px solid var(--b1)}
+.orders-tbl td{padding:10px 17px;border-bottom:1px solid var(--b1);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.orders-tbl tr:last-child td{border-bottom:none}
+.orders-tbl tbody tr{cursor:pointer;transition:background .1s}
+.orders-tbl tbody tr:hover{background:rgba(255,255,255,.022)}
+
+.etap-cell{display:flex;flex-direction:column;gap:4px}
+.etap-nm{font-size:11.5px;color:var(--t2)}
+.mini-segs{display:flex;gap:2px}
+.mseg{height:3px;border-radius:2px;background:var(--s3);flex:1}
+.mseg.done{background:var(--grn)}
+.mseg.cur{background:var(--acc)}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:5px;font-size:11px;white-space:nowrap}
+.bd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.bg{background:var(--grn-bg);color:var(--grn)}.bg .bd{background:var(--grn)}
+.ba{background:var(--amb-bg);color:var(--amb)}.ba .bd{background:var(--amb)}
+.br{background:var(--red-bg);color:var(--red)}.br .bd{background:var(--red)}
+.bb{background:var(--blu-bg);color:var(--blu)}.bb .bd{background:var(--blu)}
+.bx{background:rgba(255,255,255,.05);color:var(--t2)}.bx .bd{background:var(--t3)}
+
+.dead{font-family:var(--m);font-size:11px;color:var(--t2)}
+.dead.late{color:var(--red)}
+
+.tbl-ft{background:var(--s1);border-top:1px solid var(--b1);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ft-info{font-family:var(--m);font-size:11px;color:var(--t3)}
+
+.empty-st{text-align:center;padding:50px 0;color:var(--t3);font-size:13px}
+
+/* ── MODAL ── */
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center}
+.backdrop.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:14px;width:520px;max-width:95vw;max-height:86vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.modal::-webkit-scrollbar{width:3px}
+.modal::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+.m-hdr{padding:19px 22px 15px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.m-oid{font-family:var(--m);font-size:10px;color:var(--t3);margin-bottom:4px}
+.m-ttl{font-size:15px;font-weight:500}
+.m-x{background:var(--s2);border:1px solid var(--b1);border-radius:7px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:17px;transition:all .13s;flex-shrink:0}
+.m-x:hover{background:var(--s3);color:var(--t1)}
+.m-body{padding:19px 22px}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.d-card{background:var(--s2);border-radius:9px;padding:12px 14px}
+.d-card.full{grid-column:1/-1}
+.d-k{font-size:9.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.d-v{font-size:13px;color:var(--t1)}
+.d-v.mn{font-family:var(--m);font-size:12px}
+.trk-lbl{font-size:9.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+.tracker{display:flex;align-items:flex-start}
+.t-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.t-step:not(:last-child)::after{content:'';position:absolute;top:12px;left:calc(50% + 13px);right:calc(-50% + 13px);height:1px;background:var(--s3)}
+.t-step.done:not(:last-child)::after{background:var(--grn)}
+.t-circ{width:25px;height:25px;border-radius:50%;z-index:1;border:1px solid var(--b1);background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:var(--t3);position:relative}
+.t-step.done .t-circ{background:var(--grn-bg);border-color:var(--grn);color:var(--grn)}
+.t-step.cur .t-circ{background:var(--acc-bg);border-color:var(--acc);color:var(--acc);box-shadow:0 0 0 3px rgba(196,176,255,.15)}
+.t-lbl{font-size:9px;margin-top:6px;color:var(--t3);text-align:center;max-width:52px;line-height:1.3}
+.t-step.done .t-lbl{color:var(--grn)}
+.t-step.cur .t-lbl{color:var(--acc);font-weight:500}
+.m-ft{padding:13px 22px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="logo-n">Fabri<em>Q</em></div>
+  <div class="nav-tabs" id="nav-tabs"></div>
+  <div class="nav-right">
+    <button class="btn btn-a">+ Sifariş</button>
+    <div class="u-av" title="Anar Həsənov">AH</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- LEFT: fabrika + sektor panel -->
+  <div class="left">
+    <div class="left-hdr">
+      <div class="left-title">Fabrika vəziyyəti</div>
+      <div class="factory-card" id="factory-card"></div>
+    </div>
+    <div class="sector-list" id="sector-list"></div>
+  </div>
+
+  <!-- RIGHT: etaplar + sifarişlər -->
+  <div class="right">
+    <div class="etap-strip">
+      <div class="etap-row" id="etap-row"></div>
+    </div>
+    <div class="ch">
+      <span class="ch-title" id="ch-title">—</span>
+      <div class="srch">
+        <span class="srch-ic">⌕</span>
+        <input id="q" placeholder="Müştəri axtar..." oninput="render()">
+      </div>
+      <select class="sel" id="fst" onchange="render()">
+        <option value="">Bütün statuslar</option>
+        <option>Davam edir</option>
+        <option>Gecikmiş</option>
+        <option>Tamamlandı</option>
+        <option>Gözləyir</option>
+      </select>
+    </div>
+    <div class="list-area" id="list-area"></div>
+    <div class="tbl-ft">
+      <span class="ft-info" id="ft-info">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="backdrop" id="bd" onclick="closeMod(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="m-hdr">
+      <div>
+        <div class="m-oid" id="m-oid"></div>
+        <div class="m-ttl" id="m-ttl"></div>
+      </div>
+      <button class="m-x" onclick="closeMod()">×</button>
+    </div>
+    <div class="m-body">
+      <div class="m-grid" id="m-grid"></div>
+      <div class="trk-lbl">İstehsal gedişatı</div>
+      <div class="tracker" id="m-tracker"></div>
+    </div>
+    <div class="m-ft">
+      <button class="btn" onclick="closeMod()">Bağla</button>
+      <button class="btn btn-a">Redaktə et</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+let SEKTORLAR = [];
+let COMPANIES = [];
+let ORDERS = [];
+
+async function loadData() {
+  try {
+    const res = await fetch('http://127.0.0.1:8000/api/dashboardData');
+    const data = await res.json();
+    
+    SEKTORLAR = data.sectors.map(s => ({
+        id: s.id,
+        name: s.name,
+        icon: s.icon,
+        color: s.color_hex,
+        etaplar: s.stages.sort((a,b)=>a.order_index-b.order_index).map(st => ({
+            id: st.id,
+            name: st.name,
+            cap: st.capacity
+        }))
+    }));
+    
+    COMPANIES = data.companies.map(c => ({
+        id: c.id,
+        name: c.name,
+        short: c.short_name,
+        bg: c.bg_color,
+        c: c.text_color
+    }));
+    
+    ORDERS = data.orders.map(o => ({
+        id: o.id,
+        sec: o.sector_id,
+        co: o.company_id,
+        cesid: o.product_type,
+        miqdar: o.quantity,
+        etapIdx: o.stage_index,
+        status: o.status,
+        tarix: o.deadline,
+        reng: o.color,
+        notes: o.notes
+    }));
+    
+    // Set activeSec to the first sector if available
+    if(SEKTORLAR.length > 0) activeSec = SEKTORLAR[0].id;
+    
+    // Re-render everything
+    renderFactory();
+    renderNavTabs();
+    renderSectorList();
+    renderEtapRow();
+    render();
+  } catch (error) {
+    console.error("Failed to load dashboard data:", error);
+  }
+}
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let activeSec = 'corab';
+let activeEtap = null;
+let expanded = new Set();
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function getSector(id){ return SEKTORLAR.find(s=>s.id===id); }
+function getCompany(id){ return COMPANIES.find(c=>c.id===id); }
+function getOrder(id){ return ORDERS.find(o=>o.id===id); }
+
+function secOrders(secId){ return ORDERS.filter(o=>o.sec===secId); }
+
+function secDolluq(secId){
+  const sec = getSector(secId);
+  const orders = secOrders(secId);
+  let total = 0, cap = 0;
+  sec.etaplar.forEach((e, ei) => {
+    const cnt = orders.filter(o=>o.etapIdx===ei).length;
+    total += Math.min(cnt / e.cap, 1);
+    cap++;
+  });
+  return Math.round((total / cap) * 100);
+}
+
+function fabrikaDolluq(){
+  let sum = 0;
+  SEKTORLAR.forEach(s => sum += secDolluq(s.id));
+  return Math.round(sum / SEKTORLAR.length);
+}
+
+function dolluqLabel(pct){
+  if(pct>=90) return `<span style="font-size:9px;color:var(--red);font-family:var(--m)">Dolu</span>`;
+  if(pct>=70) return `<span style="font-size:9px;color:var(--amb);font-family:var(--m)">Yük var</span>`;
+  return `<span style="font-size:9px;color:var(--grn);font-family:var(--m)">Optimal</span>`;
+}
+
+function dolluqColor(pct){
+  if(pct>=90) return 'var(--red)';
+  if(pct>=70) return 'var(--amb)';
+  return 'var(--grn)';
+}
+
+function statusClass(s){
+  return {
+    'Davam edir':'bb','Gecikmiş':'br','Tamamlandı':'bg','Gözləyir':'ba'
+  }[s]||'bx';
+}
+
+/* ══════════════════════════════════════
+   RENDER — FACTORY CARD
+══════════════════════════════════════ */
+function renderFactory(){
+  const pct = fabrikaDolluq();
+  const color = dolluqColor(pct);
+  const subItems = SEKTORLAR.map(s=>{
+    const sp = secDolluq(s.id);
+    return `<div class="fc-sub">
+      <div class="fc-sub-dot" style="background:${s.color}"></div>
+      <span>${s.name}: <b style="color:${dolluqColor(sp)}">${sp}%</b></span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('factory-card').innerHTML = `
+    <div class="fc-top">
+      <span class="fc-label">Fabrika Doluluğu</span>
+      <span class="fc-pct" style="color:${color}">${pct}%</span>
+    </div>
+    <div class="fc-bar-bg"><div class="fc-bar" style="width:${pct}%;background:${color}"></div></div>
+    <div class="fc-subs">${subItems}</div>`;
+}
+
+/* ══════════════════════════════════════
+   RENDER — NAV TABS
+══════════════════════════════════════ */
+function renderNavTabs(){
+  const tabs = document.getElementById('nav-tabs');
+  tabs.innerHTML = SEKTORLAR.map(s=>{
+    const pct = secDolluq(s.id);
+    const cnt = secOrders(s.id).length;
+    const isActive = s.id === activeSec;
+    return `<div class="ntab ${isActive?'active':''}" style="--c:${s.color}" onclick="switchSec('${s.id}')">
+      <span class="ntab-pip" style="background:${s.color}"></span>
+      ${s.name}
+      <span class="ntab-badge" style="--c:${s.color}">${pct}% · ${cnt}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
+   RENDER — SEKTOR LIST (sol panel)
+══════════════════════════════════════ */
+function renderSectorList(){
+  const list = document.getElementById('sector-list');
+  list.innerHTML = SEKTORLAR.map(s=>{
+    const pct = secDolluq(s.id);
+    const ords = secOrders(s.id);
+    const color = dolluqColor(pct);
+    const isActive = s.id === activeSec;
+    const tags = s.etaplar.map(e=>{
+      const cnt = ords.filter((_,i)=>ORDERS.filter(o=>o.sec===s.id)[0] && true).length;
+      return `<span class="sc-tag">${e.name}</span>`;
+    }).slice(0,3).join('') + (s.etaplar.length>3?`<span class="sc-tag">+${s.etaplar.length-3}</span>`:'');
+    return `<div class="sec-card ${isActive?'active':''}" style="--c:${s.color}" onclick="switchSec('${s.id}')">
+      <div class="sc-top">
+        <div class="sc-icon" style="background:color-mix(in srgb,${s.color} 15%,var(--s3))">${s.icon}</div>
+        <div class="sc-info">
+          <div class="sc-name">${s.name}</div>
+          <div class="sc-orders">${ords.length} sifariş · ${s.etaplar.length} etap</div>
+        </div>
+        <span class="sc-pct-big" style="color:${color}">${pct}%</span>
+      </div>
+      <div class="sc-bar-bg"><div class="sc-bar" style="width:${pct}%;background:${s.color}"></div></div>
+      <div class="sc-tags">${tags}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
+   RENDER — ETAP KARTLARI (üst sağ)
+══════════════════════════════════════ */
+function renderEtapRow(){
+  const sec = getSector(activeSec);
+  const ords = secOrders(activeSec);
+  const row = document.getElementById('etap-row');
+
+  // Hamısı kartı
+  let html = `<div class="e-card ${activeEtap===null?'on':''}" style="--c:${sec.color}" onclick="switchEtap(null)">
+    <div class="ec-top"><span class="ec-nm">Hamısı</span><span class="ec-cnt">${ords.length}</span></div>
+    <div class="ec-bar-bg"><div class="ec-bar" style="width:100%;background:${sec.color}"></div></div>
+    <div class="ec-bot"><span class="ec-pct" style="font-size:13px;color:var(--t2)">Bütün</span><span class="ec-st">etaplar</span></div>
+  </div>`;
+
+  sec.etaplar.forEach((e,ei)=>{
+    const cnt = ords.filter(o=>o.etapIdx===ei).length;
+    const pct = Math.round(cnt/e.cap*100);
+    const capped = Math.min(pct,100);
+    const barBg = pct>100?'var(--red)':sec.color;
+    const isOn = activeEtap===e.id;
+    html += `<div class="e-card ${isOn?'on':''}" style="--c:${sec.color}" onclick="switchEtap('${e.id}')">
+      <div class="ec-top"><span class="ec-nm">${e.name}</span><span class="ec-cnt">${cnt}/${e.cap}</span></div>
+      <div class="ec-bar-bg"><div class="ec-bar" style="width:${capped}%;background:${barBg}"></div></div>
+      <div class="ec-bot">
+        <span class="ec-pct" style="color:${dolluqColor(pct)}">${pct}%</span>
+        <span class="ec-st">${dolluqLabel(pct)}<b>${cnt} sif.</b></span>
+      </div>
+    </div>`;
+  });
+  row.innerHTML = html;
+}
+
+/* ══════════════════════════════════════
+   RENDER — ŞİRKƏT LİSTİ (sağ aşağı)
+══════════════════════════════════════ */
+function render(){
+  const sec = getSector(activeSec);
+  const q = document.getElementById('q').value.toLowerCase();
+  const st = document.getElementById('fst').value;
+
+  let ords = secOrders(activeSec);
+  if(activeEtap !== null){
+    const ei = sec.etaplar.findIndex(e=>e.id===activeEtap);
+    ords = ords.filter(o=>o.etapIdx===ei);
+  }
+  if(st) ords = ords.filter(o=>o.status===st);
+
+  const cos = COMPANIES.filter(co=>{
+    const mine = ords.filter(o=>o.co===co.id);
+    if(!mine.length) return false;
+    if(q && !co.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const etapNm = activeEtap ? sec.etaplar.find(e=>e.id===activeEtap)?.name + ' — ' : '';
+  document.getElementById('ch-title').textContent = `${sec.name} · ${etapNm}Müştərilər`;
+  document.getElementById('ft-info').textContent = `${cos.length} müştəri · ${ords.length} sifariş`;
+
+  const area = document.getElementById('list-area');
+  if(!cos.length){ area.innerHTML='<div class="empty-st">Sifariş tapılmadı</div>'; return; }
+
+  area.innerHTML = '';
+  cos.forEach(co=>{
+    const mine = ords.filter(o=>o.co===co.id);
+    const late = mine.filter(o=>o.status==='Gecikmiş').length;
+    const done = mine.filter(o=>o.status==='Tamamlandı').length;
+    const act  = mine.filter(o=>o.status==='Davam edir').length;
+    const wait = mine.filter(o=>o.status==='Gözləyir').length;
+
+    const dotRow = [
+      late ? `<span style="color:var(--red)">${late} gecikmiş</span>` : '',
+      act  ? `<span style="color:var(--t2)">${act} davam edir</span>` : '',
+      wait ? `<span style="color:var(--amb)">${wait} gözləyir</span>` : '',
+      done ? `<span style="color:var(--grn)">${done} hazır</span>` : '',
+    ].filter(Boolean).join('<span style="color:var(--t3)"> · </span>');
+
+    const pills = [
+      {v:mine.length, l:'sifariş', c:'var(--acc)'},
+      {v:late, l:'gecikmiş', c:late?'var(--red)':'var(--t3)'},
+      {v:done, l:'hazır', c:done?'var(--grn)':'var(--t3)'},
+    ].map(p=>`<div class="cpill"><span class="cpill-v" style="color:${p.c}">${p.v}</span><span class="cpill-l">${p.l}</span></div>`).join('');
+
+    const isExp = expanded.has(co.id+activeSec);
+    const rows = mine.map(o=>{
+      const segs = sec.etaplar.map((_,si)=>{
+        const cls = si<o.etapIdx?'done':si===o.etapIdx?'cur':'';
+        return `<div class="mseg ${cls}" title="${sec.etaplar[si].name}"></div>`;
+      }).join('');
+      return `<tr onclick="openMod('${o.id}')">
+        <td style="width:90px"><span style="font-family:var(--m);font-size:10.5px;color:var(--t3)">${o.id}</span></td>
+        <td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${o.reng};display:inline-block;flex-shrink:0"></span>${o.cesid}</span></td>
+        <td style="width:85px"><span style="font-family:var(--m);font-size:11px">${o.miqdar}</span></td>
+        <td style="width:155px"><div class="etap-cell"><span class="etap-nm">${sec.etaplar[o.etapIdx].name}</span><div class="mini-segs">${segs}</div></div></td>
+        <td style="width:105px"><span class="badge ${statusClass(o.status)}"><span class="bd"></span>${o.status}</span></td>
+        <td style="width:80px"><span class="dead ${o.status==='Gecikmiş'?'late':''}">${o.tarix}</span></td>
+      </tr>`;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = 'co-card' + (isExp?' exp':'');
+    card.innerHTML = `
+      <div class="co-hdr" onclick="toggleCo('${co.id+activeSec}')">
+        <div class="co-av" style="background:${co.bg};color:${co.c}">${co.short}</div>
+        <div class="co-info">
+          <div class="co-nm">${co.name}</div>
+          <div class="co-meta">${dotRow}</div>
+        </div>
+        <div class="co-pills">${pills}</div>
+        <svg class="co-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8l5 5 5-5"/></svg>
+      </div>
+      <div class="co-body">
+        <table class="orders-tbl">
+          <thead><tr>
+            <th>Sifariş №</th><th>Çeşid</th><th>Miqdar</th>
+            <th>Cari etap</th><th>Status</th><th>Son tarix</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    area.appendChild(card);
+  });
+}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+function openMod(id){
+  const o = getOrder(id);
+  const co = getCompany(o.co);
+  const sec = getSector(o.sec);
+
+  document.getElementById('m-oid').textContent = o.id + ' · ' + sec.name + ' sektoru';
+  document.getElementById('m-ttl').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-top:3px">
+      <div style="width:32px;height:32px;border-radius:8px;background:${co.bg};color:${co.c};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">${co.short}</div>
+      <div>
+        <div style="font-size:15px;font-weight:500">${co.name}</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:1px;display:flex;align-items:center;gap:5px">
+          <span style="width:8px;height:8px;border-radius:50%;background:${o.reng};display:inline-block"></span>${o.cesid}
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('m-grid').innerHTML = `
+    <div class="d-card"><div class="d-k">Miqdar</div><div class="d-v mn">${o.miqdar}</div></div>
+    <div class="d-card"><div class="d-k">Son tarix</div><div class="d-v mn" style="${o.status==='Gecikmiş'?'color:var(--red)':''}">${o.tarix}</div></div>
+    <div class="d-card"><div class="d-k">Status</div><div class="d-v"><span class="badge ${statusClass(o.status)}"><span class="bd"></span>${o.status}</span></div></div>
+    <div class="d-card"><div class="d-k">Sektor</div><div class="d-v" style="display:flex;align-items:center;gap:6px"><span style="font-size:14px">${sec.icon}</span>${sec.name}</div></div>
+    <div class="d-card full"><div class="d-k">Qeydlər</div><div class="d-v" style="color:var(--t2);line-height:1.6">${o.notes}</div></div>`;
+
+  document.getElementById('m-tracker').innerHTML = sec.etaplar.map((e,i)=>{
+    const cls = i<o.etapIdx?'done':i===o.etapIdx?'cur':'';
+    const sym = i<o.etapIdx?'✓':i===o.etapIdx?'●':i+1;
+    return `<div class="t-step ${cls}"><div class="t-circ">${sym}</div><div class="t-lbl">${e.name}</div></div>`;
+  }).join('');
+
+  document.getElementById('bd').classList.add('open');
+}
+
+function closeMod(e){
+  if(e && e.target.id!=='bd') return;
+  document.getElementById('bd').classList.remove('open');
+}
+
+/* ══════════════════════════════════════
+   STATE ACTIONS
+══════════════════════════════════════ */
+function switchSec(id){
+  activeSec = id;
+  activeEtap = null;
+  renderNavTabs();
+  renderSectorList();
+  renderEtapRow();
+  render();
+}
+
+function switchEtap(id){
+  activeEtap = id;
+  renderEtapRow();
+  render();
+}
+
+function toggleCo(key){
+  expanded.has(key) ? expanded.delete(key) : expanded.add(key);
+  render();
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+loadData();
+
+</script>
+</body>
+</html>
