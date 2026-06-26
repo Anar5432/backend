@@ -48,6 +48,9 @@ class OrderBase(BaseModel):
     deadline: str
     color: str
     notes: Optional[str] = None
+    difficulty: Optional[str] = None
+    workers_assigned: Optional[int] = None
+    planned_days: Optional[int] = None
 
 class OrderCreate(OrderBase):
     pass
@@ -62,3 +65,24 @@ class OrderStageUpdate(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: str
+
+class PlanOrderInput(BaseModel):
+    order_id: str
+    workers: int
+    difficulty: str
+
+class OrderPlanRequest(BaseModel):
+    orders: List[PlanOrderInput]
+
+class PlannedOrderResponse(BaseModel):
+    order_id: str
+    planned_days: int
+    new_deadline: str
+
+class OrderPlanResponse(BaseModel):
+    results: List[PlannedOrderResponse]
+
+class ApplyPlanRequest(BaseModel):
+    plans: List[PlannedOrderResponse]
+
+

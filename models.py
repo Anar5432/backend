@@ -51,6 +51,9 @@ class Order(Base):
     deadline = Column(String)
     color = Column(String)
     notes = Column(String)
+    difficulty = Column(String, nullable=True)
+    workers_assigned = Column(Integer, nullable=True)
+    planned_days = Column(Integer, nullable=True)
 
     sector = relationship("Sector", back_populates="orders")
     company = relationship("Company", back_populates="orders")

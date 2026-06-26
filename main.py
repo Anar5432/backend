@@ -153,9 +153,83 @@ def update_order_status(order_id: str, status_update: schemas.OrderStatusUpdate,
     return db_order
 
 # -----------------
+# PLANNING
+# -----------------
+import math
+from datetime import datetime, timedelta
+from capacities import CAPACITIES
+
+@app.post("/api/plan", response_model=schemas.OrderPlanResponse)
+def plan_orders(request: schemas.OrderPlanRequest, db: Session = Depends(get_db)):
+    active_orders = db.query(models.Order).filter(models.Order.status != "Tamamlandı").order_by(models.Order.id).all()
+    plan_inputs = {req.order_id: req for req in request.orders}
+    results = []
+    current_days_accumulated = 0
+    
+    import re
+    for order in active_orders:
+        try:
+            qty_str = str(order.quantity).replace(',', '')
+            qty_str = re.sub(r'[^\d]', '', qty_str)
+            qty = int(qty_str) if qty_str else 0
+        except:
+            qty = 0
+            
+        if qty <= 0:
+            continue
+            
+        prod_type = order.product_type
+        caps = CAPACITIES.get(prod_type, CAPACITIES["default"])
+        is_selected = order.id in plan_inputs
+        
+        if is_selected:
+            workers = plan_inputs[order.id].workers
+            difficulty = plan_inputs[order.id].difficulty
+            if workers <= 0: workers = 1
+            
+            cap_for_10 = caps.get(difficulty, caps["easy"])
+            daily_cap = (cap_for_10 / 10.0) * workers
+            days_required = math.ceil(qty / daily_cap) if daily_cap > 0 else 0
+            current_days_accumulated += days_required
+            
+            new_date = datetime.now() + timedelta(days=current_days_accumulated)
+            month_az = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"]
+            deadline_str = f"{new_date.day} {month_az[new_date.month - 1]}"
+            
+            results.append(schemas.PlannedOrderResponse(
+                order_id=order.id,
+                planned_days=days_required,
+                new_deadline=deadline_str
+            ))
+        else:
+            standard_cap_10 = (0.8 * caps["hard"]) + (0.2 * caps["easy"])
+            daily_cap = standard_cap_10
+            days_required = math.ceil(qty / daily_cap) if daily_cap > 0 else 0
+            current_days_accumulated += days_required
+
+    return {"results": results}
+
+@app.post("/api/apply_plan", response_model=dict)
+def apply_plan(request: schemas.ApplyPlanRequest, db: Session = Depends(get_db)):
+    for plan in request.plans:
+        db_order = db.query(models.Order).filter(models.Order.id == plan.order_id).first()
+        if db_order:
+            db_order.deadline = plan.new_deadline
+            db_order.planned_days = plan.planned_days
+    db.commit()
+    return {"status": "success"}
+
+# -----------------
 # DASHBOARD DATA
 # -----------------
-@app.get("/api/dashboardData")
+from pydantic import BaseModel
+
+class DashboardResponse(BaseModel):
+    sectors: List[schemas.Sector]
+    companies: List[schemas.Company]
+    orders: List[schemas.Order]
+
+@app.get("/api/dashboardData", response_model=DashboardResponse)
 def get_dashboard_data(db: Session = Depends(get_db)):
     # Composite endpoint for the frontend to pull everything at once if desired
     sectors = db.query(models.Sector).all()

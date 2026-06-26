@@ -34,23 +34,23 @@ def seed():
     stages = [
         # Corab stages
         models.Stage(id="corab-satis", sector_id="corab", name="Satış (sifariş)", capacity=10, order_index=0),
-        models.Stage(id="corab-ambar", sector_id="corab", name="Ambar", capacity=14, order_index=1),
+        models.Stage(id="corab-ambar", sector_id="corab", name="Anbar", capacity=14, order_index=1),
         models.Stage(id="corab-istehsal", sector_id="corab", name="İstehsalat", capacity=12, order_index=2),
         
         # İç Geyim stages
         models.Stage(id="ic-satis", sector_id="ic", name="Satış", capacity=8, order_index=0),
-        models.Stage(id="ic-ambar1", sector_id="ic", name="Ambar (material təminatı)", capacity=12, order_index=1),
+        models.Stage(id="ic-ambar1", sector_id="ic", name="Anbar (material təminatı)", capacity=12, order_index=1),
         models.Stage(id="ic-kesim", sector_id="ic", name="Kəsim", capacity=10, order_index=2),
         models.Stage(id="ic-tikis", sector_id="ic", name="Tikiş", capacity=12, order_index=3),
-        models.Stage(id="ic-ambar2", sector_id="ic", name="Ambar", capacity=10, order_index=4),
+        models.Stage(id="ic-ambar2", sector_id="ic", name="Anbar", capacity=10, order_index=4),
 
         # İşçi geyimi stages
         models.Stage(id="korp-satis", sector_id="korp", name="Satış (sifariş)", capacity=6, order_index=0),
         models.Stage(id="korp-numune", sector_id="korp", name="Nümunə", capacity=8, order_index=1),
-        models.Stage(id="korp-ambar1", sector_id="korp", name="Ambar (material təminatı)", capacity=10, order_index=2),
+        models.Stage(id="korp-ambar1", sector_id="korp", name="Anbar (material təminatı)", capacity=10, order_index=2),
         models.Stage(id="korp-kesim", sector_id="korp", name="Kəsim", capacity=8, order_index=3),
         models.Stage(id="korp-tikis", sector_id="korp", name="Tikiş", capacity=10, order_index=4),
-        models.Stage(id="korp-ambar2", sector_id="korp", name="Ambar", capacity=12, order_index=5),
+        models.Stage(id="korp-ambar2", sector_id="korp", name="Anbar", capacity=12, order_index=5),
     ]
     db.add_all(stages)
 

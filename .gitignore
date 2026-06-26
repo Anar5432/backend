@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.txt
+!requirements.txt
+*.csv
+*.html
+*.dbml
+*.db
+!factory.db
+*.json
