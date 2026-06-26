@@ -225,44 +225,17 @@
         </div>
       </a>
       
-      <!-- Forecast Module -->
-      <div class="fc-card">
-        <div class="fc-title">📈 İstehsalat Planlaması</div>
-        
-        {% if sector == 'corab' %}
-        <div class="fc-row">
-          <span>Orta İstehsal:</span>
-          <span class="fc-val">{{ forecast.avg_per_day }} <span style="font-size:10px;color:var(--t3)">cüt/gün</span></span>
+      <!-- Planning Module -->
+      <div class="fc-card" style="padding: 24px 16px; border: 2px solid rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.05); text-align: center; border-radius: 12px;">
+        <div style="font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+          🚀 İstehsalat Planlaması
         </div>
-        <div class="fc-row">
-          <span>Aktiv Yük:</span>
-          <span class="fc-val">{{ forecast.total_backlog }} <span style="font-size:10px;color:var(--t3)">cüt</span></span>
+        <div style="font-size: 13px; color: var(--t2); margin-bottom: 20px;">
+          Mövcud sifarişləri planlayın və vaxtları simulyasiya edin
         </div>
-        <div class="fc-row" style="margin-bottom:0">
-          <span>Tamamlanacaq:</span>
-          <span class="fc-val fc-hl">{{ forecast.completion_date_str }}</span>
-        </div>
-        
-        <div class="fc-divider"></div>
-        
-        <div style="font-size:12px;color:var(--t2)">Yeni Sifariş Kalkulyatoru</div>
-        <input type="number" id="fc-calc-input" class="fc-input" placeholder="Sifariş miqdarı (cüt)...">
-        
-        <div id="fc-calc-res" class="fc-res">
-          Start: <b id="fc-start-date">{{ forecast.completion_date_str }}</b><br>
-          Bitiş: <b id="fc-end-date" class="fc-hl">-</b>
-        </div>
-        
-        <div class="fc-note">* Hesablamalar son 2 ayın (60 gün) faktiki orta göstəricilərinə əsaslanır.</div>
-        
-        {% else %}
-        <div style="font-size:12px;color:var(--t3);text-align:center;padding:10px 0;">Yeni Planlama Pəncərəsindən istifadə edin.</div>
-        {% endif %}
-        
-        <div class="fc-divider"></div>
-        <div style="font-size:12px;color:var(--t2);margin-bottom:8px">Mövcud Sifarişləri Planla</div>
-        <button class="btn btn-a" style="width:100%; justify-content:center; padding:10px" onclick="openPlanModal()">Planlama Pəncərəsini Aç</button>
-
+        <button class="btn btn-a" style="width:100%; justify-content:center; padding:16px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(124, 58, 237, 0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(124, 58, 237, 0.4)'" onclick="openPlanModal()">
+          PLANLAMA PƏNCƏRƏSİNİ AÇ
+        </button>
       </div>
       
     </div>
