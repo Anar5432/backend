@@ -25,6 +25,31 @@ def get_throughput_rates():
         return cached
         
     sql = """
+    WITH HM_Goods AS (
+        SELECT idn, name, muddet, SUBSTRING(name, 4, LEN(name)) as base_name
+        FROM sm_goods WITH (NOLOCK)
+        WHERE class = 27 AND muddet > 0 AND name LIKE 'HM-%'
+    ),
+    YM_Goods AS (
+        SELECT idn, name, SUBSTRING(name, 4, LEN(name)) as base_name
+        FROM sm_goods WITH (NOLOCK)
+        WHERE name LIKE 'YM-%'
+    )
+    SELECT 
+        hm.name AS product_name,
+        hm.muddet,
+        MIN(t.tarix) AS first_date,
+        MAX(t.tarix) AS last_date,
+        SUM(tel.miqdar) AS total_produced
+    FROM HM_Goods hm
+    JOIN YM_Goods ym ON ym.base_name = hm.base_name
+    JOIN sm_sob_trans_el tel WITH (NOLOCK) ON tel.mal = ym.idn
+    JOIN sm_sob_trans t WITH (NOLOCK) ON t.idn = tel.es_no
+    WHERE t.tesdiq = 1 AND t.sobe2 = 6
+    GROUP BY hm.name, hm.muddet
+    
+    UNION ALL
+    
     SELECT 
         hm.name AS product_name,
         hm.muddet,
@@ -32,12 +57,10 @@ def get_throughput_rates():
         MAX(t.tarix) AS last_date,
         SUM(tel.miqdar) AS total_produced
     FROM sm_goods hm WITH (NOLOCK)
-    JOIN sm_goods ym WITH (NOLOCK) ON (ym.idn = hm.idn OR (ym.name LIKE 'YM-%' AND hm.name LIKE 'HM-%' AND SUBSTRING(ym.name, 4, LEN(ym.name)) = SUBSTRING(hm.name, 4, LEN(hm.name))))
-    JOIN sm_sob_trans_el tel WITH (NOLOCK) ON tel.mal = ym.idn
+    JOIN sm_sob_trans_el tel WITH (NOLOCK) ON tel.mal = hm.idn
     JOIN sm_sob_trans t WITH (NOLOCK) ON t.idn = tel.es_no
-    WHERE hm.class = 27 AND t.tesdiq = 1 AND t.sobe2 = 6 AND hm.muddet > 0
+    WHERE hm.class = 27 AND hm.muddet > 0 AND t.tesdiq = 1 AND t.sobe2 = 6
     GROUP BY hm.name, hm.muddet
-    HAVING SUM(tel.miqdar) > 0
     """
     try:
         rows = query(sql)
