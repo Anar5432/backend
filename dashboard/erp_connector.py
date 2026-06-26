@@ -2,7 +2,7 @@
 erp_connector.py — Read-only connection pool to BTFERPDB (SQL Server).
 All queries use NOLOCK hint to avoid blocking ERP users.
 """
-import pyodbc
+import pymssql
 import threading
 from django.conf import settings
 from django.core.cache import cache
@@ -10,34 +10,30 @@ from django.core.cache import cache
 # Thread-local storage so each thread gets its own connection
 _local = threading.local()
 
-CONN_STRING = (
-    f"DRIVER={{{settings.MSSQL_CONFIG['DRIVER']}}};"
-    f"SERVER={settings.MSSQL_CONFIG['SERVER']};"
-    f"DATABASE={settings.MSSQL_CONFIG['DATABASE']};"
-    f"UID={settings.MSSQL_CONFIG['USERNAME']};"
-    f"PWD={settings.MSSQL_CONFIG['PASSWORD']};"
-    f"TrustServerCertificate={settings.MSSQL_CONFIG['TRUST_SERVER_CERTIFICATE']};"
-    f"Encrypt=no;"
-)
-
-
 def get_connection():
     """Return a thread-local persistent connection to SQL Server."""
     conn = getattr(_local, 'conn', None)
+    
+    def connect():
+        # pymssql expects the port as part of the host if using host:port, or in this case server:port
+        server = settings.MSSQL_CONFIG['SERVER'].replace(',', ':')
+        return pymssql.connect(
+            server=server,
+            user=settings.MSSQL_CONFIG['USERNAME'],
+            password=settings.MSSQL_CONFIG['PASSWORD'],
+            database=settings.MSSQL_CONFIG['DATABASE'],
+            charset='cp1254',
+            autocommit=True
+        )
+
     if conn is None:
-        conn = pyodbc.connect(CONN_STRING, autocommit=True)
-        # SQL Server ODBC returns wide chars as UTF-16-LE natively
-        # SQL_CHAR (narrow) use cp1254 (Turkish Windows codepage)
-        conn.setdecoding(pyodbc.SQL_CHAR, encoding='cp1254')
-        conn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-16-le')
+        conn = connect()
         _local.conn = conn
     else:
         try:
-            conn.execute("SELECT 1")
+            conn.cursor().execute("SELECT 1")
         except Exception:
-            conn = pyodbc.connect(CONN_STRING, autocommit=True)
-            conn.setdecoding(pyodbc.SQL_CHAR, encoding='cp1254')
-            conn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-16-le')
+            conn = connect()
             _local.conn = conn
     return conn
 

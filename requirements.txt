@@ -3,6 +3,6 @@ fastapi
 uvicorn
 sqlalchemy
 gunicorn
-pyodbc
+pymssql
 whitenoise
 pydantic
