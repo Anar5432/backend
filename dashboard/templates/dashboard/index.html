@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FabriQ — Corab İstehsalı</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <style>
+    :root{
+      --bg:#0d0d0f; --s1:#161618; --s2:#1e1e22; --s3:#26262c;
+      --b1:rgba(255,255,255,.06); --b2:rgba(255,255,255,.11);
+      --t1:#eeeae4; --t2:#8b8894; --t3:#4e4c58;
+      --acc:#5badf0; --acc-bg:rgba(91,173,240,.1); /* Blue for Socks */
+      --grn:#5ddba8; --grn-bg:rgba(93,219,168,.1);
+      --amb:#f5c842; --amb-bg:rgba(245,200,66,.1);
+      --red:#f06b6b; --red-bg:rgba(240,107,107,.1);
+      --blu:#5badf0; --blu-bg:rgba(91,173,240,.1);
+      --f:'DM Sans',sans-serif; --m:'DM Mono',monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:var(--f);background:var(--bg);color:var(--t1);display:flex;flex-direction:column}
+    
+    /* ── TOP NAV ── */
+    .topnav{background:var(--s1);border-bottom:1px solid var(--b1);padding:0 24px;display:flex;align-items:center;gap:0;flex-shrink:0;height:52px}
+    .logo-n{font-size:16px;font-weight:500;letter-spacing:-.3px;margin-right:24px;flex-shrink:0}
+    .logo-n em{font-style:normal;color:var(--acc)}
+    .nav-tabs{display:flex;align-items:stretch;gap:0;flex:1}
+    .ntab{display:flex;align-items:center;gap:8px;padding:0 18px;height:52px;cursor:pointer;font-size:13px;color:var(--t3);border-bottom:2px solid transparent;transition:all .13s;white-space:nowrap;user-select:none;flex-shrink:0}
+    .ntab:hover{color:var(--t2)}
+    .ntab.active{color:var(--t1);border-bottom-color:var(--c,var(--acc))}
+    .ntab-pip{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
+    .btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:7px;font-size:12px;font-family:var(--f);cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);white-space:nowrap;transition:all .13s}
+    .btn:hover{background:var(--s2);color:var(--t1)}
+    .u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;cursor:pointer;flex-shrink:0}
+    
+    /* ── BODY LAYOUT ── */
+    .app-body{flex:1;display:flex;overflow:hidden}
+    
+    /* ── LEFT PANEL ── */
+    .left{width:300px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+    .left-hdr{padding:16px 18px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
+    .left-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+    .factory-card{background:var(--s2);border-radius:11px;padding:14px 16px;margin-bottom:0}
+    .sector-list{flex:1;overflow-y:auto;padding:12px}
+    .sec-card{background:var(--s2);border:1px solid var(--b1);border-radius:11px;padding:14px 15px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+    .sec-card.active{border-color:color-mix(in srgb,var(--c,var(--acc)) 40%,var(--b1));background:color-mix(in srgb,var(--c,var(--acc)) 6%,var(--s2))}
+    .sec-card.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--acc));opacity:1;border-radius:3px 0 0 3px}
+    .sc-top{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+    .sc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .sc-info{flex:1;min-width:0}
+    .sc-name{font-size:13px;font-weight:500;color:var(--t1)}
+    .sc-orders{font-size:11px;color:var(--t3);margin-top:2px}
+    
+    .fc-card{background:var(--s2);border:1px solid var(--b1);border-radius:11px;padding:16px;margin-top:16px}
+    .fc-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+    .fc-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;color:var(--t2)}
+    .fc-val{color:var(--t1);font-family:var(--m);font-weight:500}
+    .fc-hl{color:var(--acc)}
+    .fc-divider{height:1px;background:var(--b1);margin:14px 0}
+    .fc-input{width:100%;background:var(--s3);border:1px solid var(--b2);color:var(--t1);font-family:var(--m);padding:8px 10px;border-radius:6px;font-size:13px;margin-top:6px;outline:none}
+    .fc-input:focus{border-color:var(--acc)}
+    .fc-res{margin-top:10px;font-size:11.5px;color:var(--t2);line-height:1.5;display:none}
+    .fc-res.show{display:block}
+    .fc-res b{color:var(--t1);font-weight:500}
+    .fc-note{font-size:9.5px;color:var(--t3);margin-top:14px;line-height:1.3}
+    
+    /* ── RIGHT PANEL ── */
+    .right{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+    
+    /* Etap kartları */
+    .etap-strip{background:var(--s1);border-bottom:1px solid var(--b1);padding:14px 20px;flex-shrink:0;overflow-x:auto}
+    .etap-strip::-webkit-scrollbar{height:0}
+    .etap-row{display:flex;gap:9px;min-width:max-content}
+    .e-card{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px 15px;width:148px;flex-shrink:0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+    .e-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--acc));opacity:0;transition:opacity .15s}
+    .e-card:hover{border-color:var(--b2);background:var(--s3)}
+    .e-card:hover::before{opacity:.5}
+    .e-card.on{border-color:color-mix(in srgb,var(--c,var(--acc)) 50%,var(--b1));background:color-mix(in srgb,var(--c,var(--acc)) 8%,var(--s2))}
+    .e-card.on::before{opacity:1}
+    .ec-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+    .ec-nm{font-size:11.5px;font-weight:500;color:var(--t1)}
+    .ec-cnt{font-family:var(--m);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--s3);color:var(--t3)}
+    .e-card.on .ec-cnt{background:color-mix(in srgb,var(--c,var(--acc)) 20%,transparent);color:var(--c,var(--acc))}
+    .ec-bar-bg{height:4px;border-radius:3px;background:var(--s3);margin-bottom:8px;overflow:hidden}
+    .ec-bar{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .ec-bot{display:flex;align-items:baseline;justify-content:space-between}
+    .ec-pct{font-family:var(--m);font-size:16px;font-weight:500;line-height:1}
+    .ec-st{font-size:9px;text-align:right;line-height:1.4}
+    .ec-st b{display:block;font-weight:400;font-size:10px;color:var(--t2)}
+    
+    .ch{background:var(--s1);border-bottom:1px solid var(--b1);padding:11px 20px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+    .ch-title{font-size:13px;font-weight:500;flex:1}
+    
+    .list-area{flex:1;overflow-y:auto;padding:14px 20px;display:flex;flex-direction:column;gap:9px}
+    .list-area::-webkit-scrollbar{width:3px}
+    .list-area::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+    
+    .co-card{background:var(--s1);border:1px solid var(--b1);border-radius:11px;overflow:hidden;transition:border-color .15s; flex-shrink:0;}
+    .co-hdr{display:flex;align-items:center;gap:13px;padding:13px 17px;cursor:pointer;user-select:none;transition:background .13s}
+    .co-av{width:36px;height:36px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500}
+    .co-info{flex:1;min-width:0}
+    .co-nm{font-size:13px;font-weight:500}
+    .co-meta{font-size:11px;color:var(--t3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+    .co-pills{display:flex;gap:7px;flex-shrink:0}
+    .cpill{display:flex;flex-direction:column;align-items:center;padding:4px 9px;border-radius:7px;background:var(--s2);min-width:40px}
+    .cpill-v{font-family:var(--m);font-size:13px;font-weight:500;line-height:1}
+    .cpill-l{font-size:9px;color:var(--t3);margin-top:2px}
+    .co-chev{width:18px;height:18px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+    .co-card.exp .co-chev{transform:rotate(180deg)}
+    
+    .co-body{border-top:1px solid var(--b1);display:none;}
+    .co-card.exp .co-body{display:block;}
+    
+    .orders-tbl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+    .orders-tbl th{background:var(--bg);padding:8px 17px;text-align:left;font-size:9.5px;font-weight:500;letter-spacing:.09em;color:var(--t3);text-transform:uppercase;border-bottom:1px solid var(--b1)}
+    .orders-tbl td{padding:10px 17px;border-bottom:1px solid var(--b1);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .orders-tbl tbody tr{cursor:pointer;transition:background .1s}
+    .orders-tbl tbody tr:hover{background:rgba(255,255,255,.022)}
+    .orders-tbl tbody.has-splits tr:not(.spacer-row) td { background: rgba(0,0,0,0.4); border-bottom: 1px dashed rgba(255,255,255,0.05); }
+    .orders-tbl tbody.has-splits tr:first-child td { border-top: 2px solid var(--acc); }
+    .orders-tbl tbody.has-splits tr:nth-last-child(2) td { border-bottom: 2px solid var(--acc); }
+    .orders-tbl tbody.has-splits tr:not(.spacer-row) td:first-child { border-left: 2px solid var(--acc); }
+    .orders-tbl tbody.has-splits tr:not(.spacer-row) td:last-child { border-right: 2px solid var(--acc); }
+    
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:5px;font-size:11px;white-space:nowrap}
+    .bd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .bg{background:var(--grn-bg);color:var(--grn)}.bg .bd{background:var(--grn)}
+    .ba{background:var(--amb-bg);color:var(--amb)}.ba .bd{background:var(--amb)}
+    .br{background:var(--red-bg);color:var(--red)}.br .bd{background:var(--red)}
+    .bb{background:var(--blu-bg);color:var(--blu)}.bb .bd{background:var(--blu)}
+    .bx{background:rgba(255,255,255,.05);color:var(--t2)}.bx .bd{background:var(--t3)}
+    
+    .etap-cell{display:flex;flex-direction:column;gap:4px}
+    .etap-nm{font-size:11.5px;color:var(--t2)}
+    .mini-segs{display:flex;gap:2px}
+    .mseg{height:3px;border-radius:2px;background:var(--s3);flex:1}
+    .mseg.done{background:var(--grn)}
+    .mseg.cur{background:var(--acc)}
+    
+    /* ── MODAL ── */
+    .backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center}
+    .backdrop.open{display:flex}
+    .modal{background:var(--s1);border:1px solid var(--b2);border-radius:14px;width:520px;max-width:95vw;max-height:86vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes mIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+    .modal::-webkit-scrollbar{width:3px}
+    .modal::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+    .m-hdr{padding:19px 22px 15px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .m-oid{font-family:var(--m);font-size:10px;color:var(--t3);margin-bottom:4px}
+    .m-ttl{font-size:15px;font-weight:500}
+    .m-x{background:var(--s2);border:1px solid var(--b1);border-radius:7px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:17px;transition:all .13s;flex-shrink:0}
+    .m-x:hover{background:var(--s3);color:var(--t1)}
+    .m-body{padding:19px 22px}
+    .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+    .d-card{background:var(--s2);border-radius:9px;padding:12px 14px}
+    .d-card.full{grid-column:1/-1}
+    .d-k{font-size:9.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+    .d-v{font-size:13px;color:var(--t1)}
+    .d-v.mn{font-family:var(--m);font-size:12px}
+    .trk-lbl{font-size:9.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+    .tracker{display:flex;align-items:flex-start}
+    .t-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+    .t-step:not(:last-child)::after{content:'';position:absolute;top:12px;left:calc(50% + 13px);right:calc(-50% + 13px);height:1px;background:var(--s3)}
+    .t-step.done:not(:last-child)::after{background:var(--t-color, var(--grn))}
+    .t-circ{width:25px;height:25px;border-radius:50%;z-index:1;border:1px solid var(--b1);background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:var(--t3);position:relative}
+    .t-step.done .t-circ{background:color-mix(in srgb,var(--t-color, var(--grn)) 10%,transparent);border-color:var(--t-color, var(--grn));color:var(--t-color, var(--grn))}
+    .t-step.cur .t-circ{background:color-mix(in srgb,var(--t-color, var(--acc)) 10%,transparent);border-color:var(--t-color, var(--acc));color:var(--t-color, var(--acc));box-shadow:0 0 0 3px color-mix(in srgb,var(--t-color, var(--acc)) 15%,transparent)}
+    .t-lbl{font-size:9px;margin-top:6px;color:var(--t3);text-align:center;max-width:52px;line-height:1.3}
+    .t-step.done .t-lbl{color:var(--t-color, var(--grn))}
+  </style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="logo-n">Fabri<em>Q</em></div>
+  <div class="nav-tabs">
+    <div class="ntab active" style="--c:var(--{{ rules.color }})">
+      <span class="ntab-pip" style="background:var(--{{ rules.color }})"></span> {% if sector == 'isci' %}İşçi geyimi{% elif sector == 'underwear' %}Underwear{% else %}Corab{% endif %}
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="u-av" title="Admin">A</div>
+  </div>
+</div>
+
+<div class="app-body">
+  <!-- LEFT: Sektor panel -->
+  <div class="left">
+    <div class="sector-list">
+      <a href="?sector=corab" style="text-decoration:none; display:block; margin-bottom: 8px;">
+        <div class="sec-card {% if sector == 'corab' %}active{% endif %}" style="--c:var(--acc)">
+          <div class="sc-top">
+            <div class="sc-icon" style="background:rgba(91,173,240,.1)">🧦</div>
+            <div class="sc-info">
+              <div class="sc-name">Corab</div>
+              <div class="sc-orders" style="{% if sector == 'corab' %}color:var(--t1){% endif %}">{% if sector == 'corab' %}{{ companies|length }} müştəri{% else %}Kapasitə / Planlama{% endif %}</div>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <a href="?sector=isci" style="text-decoration:none; display:block; margin-bottom: 8px;">
+        <div class="sec-card {% if sector == 'isci' %}active{% endif %}" style="--c:var(--grn)">
+          <div class="sc-top">
+            <div class="sc-icon" style="background:rgba(93,219,168,.1)">🦺</div>
+            <div class="sc-info">
+              <div class="sc-name">İşçi geyimi</div>
+              <div class="sc-orders" style="{% if sector == 'isci' %}color:var(--t1){% endif %}">{% if sector == 'isci' %}{{ companies|length }} müştəri{% else %}Kapasitə / Planlama{% endif %}</div>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <a href="?sector=underwear" style="text-decoration:none; display:block; margin-bottom: 8px;">
+        <div class="sec-card {% if sector == 'underwear' %}active{% endif %}" style="--c:var(--amb)">
+          <div class="sc-top">
+            <div class="sc-icon" style="background:rgba(245,200,66,.1)">👕</div>
+            <div class="sc-info">
+              <div class="sc-name">Underwear / Penye</div>
+              <div class="sc-orders" style="{% if sector == 'underwear' %}color:var(--t1){% endif %}">{% if sector == 'underwear' %}{{ companies|length }} müştəri{% else %}Kapasitə / Planlama{% endif %}</div>
+            </div>
+          </div>
+        </div>
+      </a>
+      
+      <!-- Forecast Module -->
+      <div class="fc-card">
+        <div class="fc-title">📈 İstehsalat Planlaması</div>
+        
+        {% if sector == 'corab' %}
+        <div class="fc-row">
+          <span>Orta İstehsal:</span>
+          <span class="fc-val">{{ forecast.avg_per_day }} <span style="font-size:10px;color:var(--t3)">cüt/gün</span></span>
+        </div>
+        <div class="fc-row">
+          <span>Aktiv Yük:</span>
+          <span class="fc-val">{{ forecast.total_backlog }} <span style="font-size:10px;color:var(--t3)">cüt</span></span>
+        </div>
+        <div class="fc-row" style="margin-bottom:0">
+          <span>Tamamlanacaq:</span>
+          <span class="fc-val fc-hl">{{ forecast.completion_date_str }}</span>
+        </div>
+        
+        <div class="fc-divider"></div>
+        
+        <div style="font-size:12px;color:var(--t2)">Yeni Sifariş Kalkulyatoru</div>
+        <input type="number" id="fc-calc-input" class="fc-input" placeholder="Sifariş miqdarı (cüt)...">
+        
+        <div id="fc-calc-res" class="fc-res">
+          Start: <b id="fc-start-date">{{ forecast.completion_date_str }}</b><br>
+          Bitiş: <b id="fc-end-date" class="fc-hl">-</b>
+        </div>
+        
+        <div class="fc-note">* Hesablamalar son 2 ayın (60 gün) faktiki orta göstəricilərinə əsaslanır.</div>
+        
+        {% else %}
+        <div style="font-size:12px;color:var(--t3);text-align:center;padding:10px 0;">Yeni Planlama Pəncərəsindən istifadə edin.</div>
+        {% endif %}
+        
+        <div class="fc-divider"></div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:8px">Mövcud Sifarişləri Planla</div>
+        <button class="btn btn-a" style="width:100%; justify-content:center; padding:10px" onclick="openPlanModal()">Planlama Pəncərəsini Aç</button>
+
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- RIGHT: Sifarişlər -->
+  <div class="right">
+    <div class="etap-strip">
+      <div class="etap-row" id="etap-row">
+        {% for stage in stages %}
+        <div class="e-card {% if stage.id == 'all' %}on{% endif %}" style="--c:var(--{{ rules.color }})" data-stage-id="{{ stage.id }}" onclick="filterByStage('{{ stage.id }}', this)">
+          <div class="ec-top">
+            <span class="ec-nm">{{ stage.name }}</span>
+            <span class="ec-cnt">{{ stage.count }}{% if stage.id != 'all' %}/{{ stage.cap }}{% endif %}</span>
+          </div>
+          <div class="ec-bar-bg">
+            <div class="ec-bar" style="width:{{ stage.pct }}%;background:{% if stage.pct >= 90 %}var(--red){% elif stage.pct >= 70 %}var(--amb){% else %}var(--grn){% endif %}"></div>
+          </div>
+          <div class="ec-bot">
+            <span class="ec-pct" style="color:{% if stage.pct >= 90 %}var(--red){% elif stage.pct >= 70 %}var(--amb){% else %}var(--grn){% endif %}">{{ stage.pct }}%</span>
+            <span class="ec-st">
+              <span style="font-size:9px;font-family:var(--m);color:{% if stage.pct >= 90 %}var(--red){% elif stage.pct >= 70 %}var(--amb){% else %}var(--grn){% endif %}">
+                {% if stage.pct >= 90 %}Dolu{% elif stage.pct >= 70 %}Yük var{% else %}Optimal{% endif %}
+              </span>
+              <b>{{ stage.count }} sif.</b>
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="ch" style="justify-content: space-between;">
+      <span class="ch-title">{% if sector == 'isci' %}İşçi geyimi{% elif sector == 'underwear' %}Underwear / Penye{% else %}Corab{% endif %} · Müştərilər</span>
+      <input type="text" id="order-search" class="fc-input" style="width: 250px; margin-top: 0; padding: 6px 10px;" placeholder="Axtarış: müştəri, sifariş, çeşid...">
+    </div>
+    
+    <!-- This div auto-refreshes every 5 mins via HTMX -->
+    <div class="list-area" id="list-area" hx-get="{% url 'htmx_orders' %}?sector={{ sector }}" hx-trigger="every 5m" hx-swap="innerHTML">
+      {% include 'dashboard/partials/orders.html' %}
+    </div>
+  </div>
+</div>
+
+  <!-- MODAL -->
+  <div class="backdrop" id="bd" onclick="closeMod(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="m-hdr">
+        <div>
+          <div class="m-oid" id="m-oid"></div>
+          <div class="m-ttl" id="m-ttl"></div>
+        </div>
+        <button class="m-x" onclick="closeMod()">×</button>
+      </div>
+      <div class="m-body">
+        <div class="m-grid" id="m-grid"></div>
+        <div class="trk-lbl">İstehsal gedişatı</div>
+        <div class="tracker" id="m-tracker"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Pass stage config from Django to JS
+    const etaplar = [
+      {% for stage in stages %}
+        {% if stage.id != 'all' %}
+          { id: "{{ stage.id }}", name: "{{ stage.name }}" },
+        {% endif %}
+      {% endfor %}
+    ];
+  
+    // Accordion Logic
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.co-hdr')) {
+        const card = e.target.closest('.co-card');
+        card.classList.toggle('exp');
+      }
+    });
+  
+    // Modal Logic
+    function openModal(tr) {
+      const oid = tr.getAttribute('data-oid');
+      const cesid = tr.getAttribute('data-cesid');
+      const miqdar = tr.getAttribute('data-miqdar');
+      const tarix = tr.getAttribute('data-tarix');
+      const status = tr.getAttribute('data-status');
+      const sector = tr.getAttribute('data-sector');
+      const etapIdx = parseInt(tr.getAttribute('data-etap'), 10);
+      const reng = tr.getAttribute('data-reng') || '#5badf0';
+  
+      const matPct = tr.getAttribute('data-mat-pct');
+      const materialsStr = tr.getAttribute('data-materials');
+      let materials = [];
+      try {
+        if(materialsStr) materials = JSON.parse(materialsStr);
+      } catch(e) {}
+  
+      document.getElementById('m-oid').innerText = oid + ' · ' + sector + ' sektoru';
+      document.getElementById('m-ttl').innerHTML = `<span style="color:${reng};margin-right:6px">●</span>` + cesid;
+  
+      let bClass = 'bg';
+      if(status==='Gecikmiş') bClass='br';
+      else if(status==='Davam edir') bClass='bb';
+      else if(status==='Gözləyir') bClass='ba';
+  
+      let gridHtml = `
+        <div class="d-card">
+          <div class="d-k">Miqdar</div>
+          <div class="d-v mn">${miqdar}</div>
+        </div>
+        <div class="d-card">
+          <div class="d-k">Son Tarix</div>
+          <div class="d-v mn">${tarix}</div>
+        </div>
+        <div class="d-card">
+          <div class="d-k">Status</div>
+          <div class="d-v"><span class="badge ${bClass}"><span class="bd"></span>${status}</span></div>
+        </div>
+        <div class="d-card">
+          <div class="d-k">Sektor</div>
+          <div class="d-v">${sector}</div>
+        </div>
+      `;
+      
+      // If there are materials, append them to the grid
+      if (sector === 'Isci geyimi' && (etapIdx === 1 || materials.length > 0)) {
+          let matStatusHtml = '';
+          
+          let itemsHtml = materials.map(m => {
+             let isOk = m.is_ready;
+             let iconHtml = isOk 
+                ? `<svg style="width:12px;height:12px;color:var(--grn);flex-shrink:0;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`
+                : `<svg style="width:12px;height:12px;color:var(--red);flex-shrink:0;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>`;
+             
+             let detailText = isOk ? `Tam hazır (${m.needed})` : `${m.missing} əksik (Lazım: ${m.needed})`;
+             let textColor = isOk ? 'var(--t2)' : 'var(--red)';
+             
+             return `
+             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--b1); padding:6px 0; gap:8px;">
+                <div style="display:flex; align-items:center; gap:6px; min-width:0;">
+                   ${iconHtml}
+                   <span style="color:${textColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${m.mat_name}">${m.mat_name}</span>
+                </div>
+                <span style="font-family:var(--m); font-size:10.5px; color:${textColor}; white-space:nowrap; flex-shrink:0;">${detailText}</span>
+             </div>
+             `;
+          }).join('');
+
+          if (matPct === "100") {
+             matStatusHtml = `<div class="d-card full" style="border:1px solid var(--grn-bg); background:rgba(93,219,168,.05)">
+               <div class="d-k" style="color:var(--grn)">Xammal Statusu: 100% Hazırdır</div>
+               <div class="d-v" style="font-size:11.5px; margin-top:8px;">
+                 ${itemsHtml}
+               </div>
+             </div>`;
+          } else {
+             matStatusHtml = `<div class="d-card full" style="border:1px solid var(--red-bg); background:rgba(240,107,107,.05)">
+               <div class="d-k" style="color:var(--red)">Xammal Çatışmazlığı (${matPct}% Hazır)</div>
+               <div class="d-v" style="font-size:11.5px; margin-top:8px;">
+                 ${itemsHtml}
+               </div>
+             </div>`;
+          }
+          gridHtml += matStatusHtml;
+      }
+  
+      document.getElementById('m-grid').innerHTML = gridHtml;
+  
+      let trkHtml = '';
+      
+      const mTracker = document.getElementById('m-tracker');
+      mTracker.style.setProperty('--t-color', reng);
+      
+      etaplar.forEach((etp, idx) => {
+        let cls = '';
+        if (idx < etapIdx) cls = 'done';
+        else if (idx === etapIdx) {
+          cls = status === 'Tamamlandı' ? 'done' : 'cur';
+        }
+  
+        trkHtml += `
+          <div class="t-step ${cls}">
+            <div class="t-circ">
+              ${cls==='done' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' : (idx+1)}
+            </div>
+            <div class="t-lbl">${etp.name}</div>
+          </div>
+        `;
+      });
+      mTracker.innerHTML = trkHtml;
+  
+      document.getElementById('bd').classList.add('open');
+    }
+  
+    function closeMod(e) {
+      if (e && e.target !== document.getElementById('bd')) return;
+      document.getElementById('bd').classList.remove('open');
+    }
+    
+    // --- UNIFIED FILTERING & PAGINATION ---
+    let activeStageId = 'all';
+    let currentCompanyPage = 1;
+    let currentStdPage = 1;
+
+    function filterByStage(stageId, clickedCard) {
+      activeStageId = stageId;
+      document.querySelectorAll('.e-card').forEach(card => card.classList.remove('on'));
+      if (clickedCard) {
+        clickedCard.classList.add('on');
+      } else {
+        const cardToActivate = document.querySelector(`.e-card[data-stage-id="${stageId}"]`);
+        if (cardToActivate) cardToActivate.classList.add('on');
+      }
+      currentCompanyPage = 1;
+      currentStdPage = 1;
+      applyFiltersAndPagination();
+    }
+
+    const norm = (str) => {
+        if (!str) return "";
+        return str.toLowerCase().replace(/ə/g, 'e').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/i̇/g, 'i').replace(/\s+/g, ' ').trim();
+    };
+
+    function applyFiltersAndPagination() {
+      const searchInput = document.getElementById('order-search');
+      const query = searchInput ? norm(searchInput.value) : '';
+
+      // 1. Process standard production
+      const stdCard = document.querySelector('#std-tbody')?.closest('.co-card');
+      if (stdCard) {
+          const stdRows = Array.from(document.querySelectorAll('#std-tbody tr:not(.spacer-row)'));
+          let visibleStdRows = [];
+          
+          stdRows.forEach(row => {
+              const rowStageId = row.getAttribute('data-stage-id');
+              const rowText = norm(row.textContent);
+              const stageMatch = (activeStageId === 'all' || rowStageId === activeStageId);
+              const searchMatch = (query === '' || rowText.includes(query));
+              
+              if (stageMatch && searchMatch) {
+                  visibleStdRows.push(row);
+              } else {
+                  row.style.display = 'none';
+              }
+          });
+          
+          if (visibleStdRows.length > 0) {
+              stdCard.style.display = '';
+              paginateList(visibleStdRows, currentStdPage, 10, 'std-pagination-controls', stdCard.querySelector('.co-body'), (newPage) => {
+                  currentStdPage = newPage;
+                  applyFiltersAndPagination();
+              });
+          } else {
+              stdCard.style.display = 'none';
+              removePaginationControls('std-pagination-controls');
+          }
+      }
+
+      // 2. Process companies
+      const companyCards = Array.from(document.querySelectorAll('#companies-container .company-card'));
+      let visibleCards = [];
+
+      companyCards.forEach(card => {
+          const tbodys = card.querySelectorAll('tbody.order-group');
+          const custName = norm(card.querySelector('.co-nm').textContent);
+          const cardMatchesSearch = (query === '' || custName.includes(query));
+          let visibleRowsInCard = 0;
+
+          tbodys.forEach(tbody => {
+              let visibleRowsInTbody = 0;
+              const rows = tbody.querySelectorAll('tr:not(.spacer-row)');
+              
+              rows.forEach(row => {
+                  const rowStageId = row.getAttribute('data-stage-id');
+                  const rowText = norm(row.textContent);
+                  const stageMatch = (activeStageId === 'all' || rowStageId === activeStageId);
+                  const searchMatch = cardMatchesSearch || rowText.includes(query);
+    
+                  if (stageMatch && searchMatch) {
+                      row.style.display = '';
+                      visibleRowsInTbody++;
+                      visibleRowsInCard++;
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+              
+              if (visibleRowsInTbody > 0) {
+                  tbody.style.display = '';
+              } else {
+                  tbody.style.display = 'none';
+              }
+          });
+
+          if (visibleRowsInCard > 0) {
+              visibleCards.push(card);
+              if (query !== '' && !custName.includes(query)) {
+                  card.classList.add('exp');
+              }
+          } else {
+              card.style.display = 'none';
+          }
+      });
+
+      paginateList(visibleCards, currentCompanyPage, 15, 'companies-pagination-controls', document.getElementById('companies-container'), (newPage) => {
+          currentCompanyPage = newPage;
+          applyFiltersAndPagination();
+      });
+    }
+
+    function paginateList(items, currentPage, perPage, controlsId, containerNode, setPageCallback) {
+        if (!containerNode) return;
+        const totalPages = Math.ceil(items.length / perPage) || 1;
+        if (currentPage > totalPages && totalPages > 0) {
+            setPageCallback(totalPages);
+            return;
+        }
+
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+
+        items.forEach((item, idx) => {
+            if (idx >= start && idx < end) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        let controls = document.getElementById(controlsId);
+        if (!controls) {
+            controls = document.createElement('div');
+            controls.id = controlsId;
+            controls.className = 'pagination-controls';
+            containerNode.parentNode.insertBefore(controls, containerNode.nextSibling);
+        }
+
+        if (totalPages <= 1) {
+            controls.innerHTML = '';
+        } else {
+            controls.innerHTML = `
+                <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} id="btn-prev-${controlsId}">← Geri</button>
+                <span class="page-info">Səhifə ${currentPage} / ${totalPages}</span>
+                <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} id="btn-next-${controlsId}">İrəli →</button>
+            `;
+            document.getElementById(`btn-prev-${controlsId}`).onclick = () => setPageCallback(currentPage - 1);
+            document.getElementById(`btn-next-${controlsId}`).onclick = () => setPageCallback(currentPage + 1);
+        }
+    }
+
+    function removePaginationControls(controlsId) {
+        const controls = document.getElementById(controlsId);
+        if (controls) controls.innerHTML = '';
+    }
+
+    document.addEventListener('input', function(e) {
+      if (e.target.id === 'order-search') {
+        currentCompanyPage = 1;
+        currentStdPage = 1;
+        applyFiltersAndPagination();
+      }
+    });
+
+    document.body.addEventListener('htmx:afterSettle', function(evt) {
+      if (evt.target.id === 'list-area') {
+         // Apply filters, which handles both stage and search
+         filterByStage(activeStageId, null);
+      }
+    });
+  </script>
+  
+<script>
+  // Forecasting Calculator
+  const calcInput = document.getElementById('fc-calc-input');
+  const calcRes = document.getElementById('fc-calc-res');
+  const endDateEl = document.getElementById('fc-end-date');
+  
+  const avgPerDay = {{ forecast.avg_per_day }};
+  const currentDaysToClear = {{ forecast.days_to_clear }};
+  const monthsAz = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"];
+  
+  calcInput?.addEventListener('input', function(e) {
+    const qty = parseInt(e.target.value);
+    if (!qty || qty <= 0) {
+      calcRes.classList.remove('show');
+      return;
+    }
+    calcRes.classList.add('show');
+    
+    // Add new order days to the existing backlog
+    const newOrderDays = Math.round(qty / avgPerDay);
+    const totalDays = currentDaysToClear + newOrderDays;
+    
+    const today = new Date();
+    today.setDate(today.getDate() + totalDays);
+    
+    endDateEl.innerText = today.getDate() + " " + monthsAz[today.getMonth()];
+  });
+  
+  // Workwear Calculator
+  const wwBtn = document.getElementById('ww-calc-btn');
+  if (wwBtn) {
+    wwBtn.addEventListener('click', async function() {
+      const cat = document.getElementById('ww-cat-input').value;
+      const qty = document.getElementById('ww-qty-input').value;
+      const workers = document.getElementById('ww-worker-input').value;
+      
+      if (!cat || !qty) {
+        alert("Zəhmət olmasa məhsul qrupu və miqdarı seçin.");
+        return;
+      }
+      
+      wwBtn.innerText = "Hesablanır...";
+      
+      try {
+        const res = await fetch(`/api/estimate/?cat=${cat}&qty=${qty}&workers=${workers}`);
+        const data = await res.json();
+        
+        document.getElementById('ww-start-date').innerText = data.queue_ends;
+        document.getElementById('ww-days-needed').innerText = data.working_days_needed + " gün";
+        document.getElementById('ww-end-date').innerText = data.estimated_delivery;
+        
+        document.getElementById('ww-calc-res').style.display = 'block';
+      } catch (err) {
+        alert("Xəta baş verdi");
+      } finally {
+        wwBtn.innerText = "Hesabla";
+      }
+    });
+  }
+
+const CURRENT_SECTOR = "{{ sector }}";
+
+
+
+// --- PLANNING LOGIC ---
+const CAPACITIES = {
+    "kitel": {"easy": 15, "hard": 10},
+    "şalvar": {"easy": 20, "hard": 15},
+    "gödəkcə": {"easy": 12, "hard": 8},
+    "polar gödəkcə": {"easy": 25, "hard": 17},
+    "qısaqol gödəkcə": {"easy": 20, "hard": 15},
+    "xalat": {"easy": 25, "hard": 20},
+    "şalvar medical": {"easy": 30, "hard": 25},
+    "yağmurluq": {"easy": 30, "hard": 25},
+    "ixarə jileti": {"easy": 60, "hard": 30},
+    "önlük": {"easy": 100, "hard": 100}, 
+    "polo": {"easy": 40, "hard": 30},
+    "papaq": {"easy": 100, "hard": 50},
+    "Qış corabı (Qalın)": {"easy": 30, "hard": 20},
+    "İkili İdman Corabı": {"easy": 40, "hard": 30},
+    "Qadın corabı": {"easy": 50, "hard": 40},
+    "default": {"easy": 20, "hard": 15}
+};
+
+let allPlanOrders = [];
+let planState = {};
+
+function updateState(rowId, field, value) {
+    if(!planState[rowId]) planState[rowId] = { checked: false, workers: 10, difficulty: 'easy', has_material: true, mat_wait_days: 0, days: '-', start_date: '-', date: '-' };
+    planState[rowId][field] = value;
+    
+    if (field === 'checked') {
+        const wInp = document.getElementById('w-' + rowId);
+        const dInp = document.getElementById('d-' + rowId);
+        const cInp = document.getElementById('c-' + rowId);
+        const matInp = document.getElementById('mat-' + rowId);
+        const mwaitInp = document.getElementById('mwait-' + rowId);
+        if(wInp) wInp.disabled = !value;
+        if(dInp) dInp.disabled = !value;
+        if(cInp) cInp.disabled = !value;
+        if(matInp) matInp.disabled = !value;
+        if(mwaitInp) mwaitInp.disabled = !value;
+    } else if (field === 'has_material') {
+        const mwaitInp = document.getElementById('mwait-' + rowId);
+        if(mwaitInp) {
+            mwaitInp.style.display = value ? 'none' : 'block';
+            if(value) {
+                mwaitInp.value = 0;
+                planState[rowId]['mat_wait_days'] = 0;
+            }
+        }
+    } else if (field === 'category' && CURRENT_SECTOR === 'underwear') {
+       const dInp = document.getElementById('d-' + rowId);
+       if(dInp) {
+           const hasEasy = (value === 'dods');
+           if(!hasEasy) {
+               dInp.value = 'hard';
+               planState[rowId]['difficulty'] = 'hard';
+               for(let opt of dInp.options) {
+                   if(opt.value === 'easy') opt.style.display = 'none';
+               }
+           } else {
+               for(let opt of dInp.options) {
+                   if(opt.value === 'easy') opt.style.display = 'block';
+               }
+           }
+       }
+   }
+}
+
+function openPlanModal() {
+  const rows = document.querySelectorAll('#list-area .orders-tbl tbody tr');
+  allPlanOrders = [];
+  planState = {};
+  
+  const th0 = document.getElementById('th-col0');
+  const th1 = document.getElementById('th-col1');
+  const th2 = document.getElementById('th-col2');
+  
+  if (CURRENT_SECTOR === 'corab') {
+    if (th0) { th0.style.display = ''; th0.innerText = "Kategoriya"; }
+    if (th1) { th1.style.display = 'none'; }
+    if (th2) { th2.style.display = ''; th2.innerText = "Yaş (Çətinlik)"; }
+  } else if (CURRENT_SECTOR === 'underwear') {
+    if (th0) { th0.style.display = ''; th0.innerText = "Kategoriya"; }
+    if (th1) { th1.style.display = ''; th1.innerText = "İşçi Sayı"; }
+    if (th2) { th2.style.display = ''; th2.innerText = "Çətinlik"; }
+  } else {
+    // Workwear (isci)
+    if (th0) { th0.style.display = 'none'; }
+    if (th1) { th1.style.display = ''; th1.innerText = "İşçi Sayı"; }
+    if (th2) { th2.style.display = ''; th2.innerText = "Çətinlik"; }
+  }
+
+  for (let i = 0; i < rows.length; i++) {
+    const tr = rows[i];
+    if (tr.closest('#plan-bd')) continue;
+    
+    const oid = tr.getAttribute('data-oid');
+    if (!oid) continue; 
+    
+    const status = tr.getAttribute('data-status');
+    if(status === 'Tamamlandı') continue;
+
+    let miqdarStr = tr.getAttribute('data-miqdar');
+    let miqdar = 0;
+    if(miqdarStr) miqdar = parseInt(miqdarStr.split('/')[0].replace(/[^\d]/g, '')) || 0;
+    if(miqdar <= 0) continue;
+
+    const card = tr.closest('.co-card');
+    const custName = card ? card.querySelector('.co-nm').textContent.trim() : "Digər";
+    const cesid = tr.getAttribute('data-cesid');
+    
+    allPlanOrders.push({
+      i: i,
+      oid: oid,
+      custName: custName,
+      cesid: cesid,
+      miqdarStr: miqdarStr,
+      miqdar: miqdar,
+      origTr: tr
+    });
+    
+    const rowId = 'ord-' + i;
+    if (CURRENT_SECTOR === 'corab') {
+      planState[rowId] = { checked: false, category: 'men', difficulty: 'easy', days: '-', start_date: '-', date: '-' };
+    } else if (CURRENT_SECTOR === 'underwear') {
+      planState[rowId] = { checked: false, category: 'mayka', workers: 6, difficulty: 'hard', days: '-', start_date: '-', date: '-' };
+    } else {
+      planState[rowId] = { checked: false, workers: 10, difficulty: 'easy', has_material: true, mat_wait_days: 0, days: '-', start_date: '-', date: '-' };
+    }
+  }
+  
+  document.getElementById('btn-apply-plan').style.display = 'none';
+  document.getElementById('plan-all-cb').checked = false;
+  const searchInput = document.getElementById('plan-search');
+  if(searchInput) searchInput.value = '';
+  document.getElementById('plan-bd').classList.add('open');
+  
+  renderPlanTable();
+  renderPlanTable();
+}
+
+function renderPlanTable() {
+  const tbody = document.getElementById('plan-tbody');
+  const searchInput = document.getElementById('plan-search');
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+  
+  let filtered = allPlanOrders;
+  if (query) {
+     filtered = allPlanOrders.filter(o => o.custName.toLowerCase().includes(query) || o.oid.toLowerCase().includes(query) || (o.cesid && o.cesid.toLowerCase().includes(query)));
+  }
+  
+  let customers = {};
+  filtered.forEach(o => {
+    if(!customers[o.custName]) customers[o.custName] = [];
+    customers[o.custName].push(o);
+  });
+  
+  let htmlChunks = [];
+  let renderedCount = 0;
+  let hiddenCount = 0;
+  
+  for (const custName in customers) {
+     const custOrders = customers[custName];
+     
+     if (renderedCount >= 100) {
+        hiddenCount += custOrders.length;
+        continue;
+     }
+     
+     htmlChunks.push(`
+       <tr style="background:rgba(255,255,255,0.02);">
+         <td colspan="8" style="padding:10px 8px; font-weight:600; color:var(--t2); font-size:12px; border-bottom:1px solid var(--b1); border-top:1px solid var(--b1);">
+            Müştəri: <span style="color:var(--t1)">${custName}</span>
+         </td>
+       </tr>
+     `);
+     
+     for (const o of custOrders) {
+        if (renderedCount >= 100) {
+            hiddenCount++;
+            continue;
+        }
+        const rowId = 'ord-' + o.i;
+        const s = planState[rowId];
+        
+        let inputsHtml = '';
+        if (CURRENT_SECTOR === 'corab') {
+          inputsHtml = `
+            <td>
+              <select id="c-${rowId}" style="background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px;" ${!s.checked?'disabled':''} onchange="updateState('${rowId}', 'category', this.value)">
+                <option value="men" ${s.category==='men'?'selected':''}>Kişi - Böyük (K)</option>
+                <option value="women" ${s.category==='women'?'selected':''}>Qadın - Orta (Q)</option>
+                <option value="child" ${s.category==='child'?'selected':''}>Uşaq - Kiçik (U)</option>
+              </select>
+            </td>
+            <td>
+              <select id="d-${rowId}" style="background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px;" ${!s.checked?'disabled':''} onchange="updateState('${rowId}', 'difficulty', this.value)">
+                <option value="easy" ${s.difficulty==='easy'?'selected':''}>1 Yaş (Asan)</option>
+                <option value="hard" ${s.difficulty==='hard'?'selected':''}>2 Yaş (Çətin)</option>
+              </select>
+            </td>
+          `;
+        } else if (CURRENT_SECTOR === 'underwear') {
+          inputsHtml = `
+            <td>
+              <select id="c-${rowId}" style="background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px;" ${!s.checked?'disabled':''} onchange="updateState('${rowId}', 'category', this.value)">
+                <option value="boxer" ${s.category==='boxer'?'selected':''}>Boxer</option>
+                <option value="hawlubel" ${s.category==='hawlubel'?'selected':''}>Hawlubel</option>
+                <option value="dods" ${s.category==='dods'?'selected':''}>Dods tuman</option>
+                <option value="mayka" ${s.category==='mayka'?'selected':''}>Mayka</option>
+                <option value="tshirt" ${s.category==='tshirt'?'selected':''}>T-shirt</option>
+              </select>
+            </td>
+            <td><input type="number" id="w-${rowId}" value="${s.workers}" min="1" style="width:50px; background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px 5px;" ${!s.checked?'disabled':''} oninput="updateState('${rowId}', 'workers', this.value)"></td>
+            <td>
+              <select id="d-${rowId}" style="background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px;" ${!s.checked?'disabled':''} onchange="updateState('${rowId}', 'difficulty', this.value)">
+                <option value="easy" style="display:${s.category==='dods'?'block':'none'};" ${s.difficulty==='easy'?'selected':''}>Asan (Easy)</option>
+                <option value="hard" ${s.difficulty==='hard'?'selected':''}>Çətin (Hard)</option>
+              </select>
+            </td>
+          `;
+        } else {
+          inputsHtml = `
+            <td><input type="number" id="w-${rowId}" value="${s.workers}" min="1" style="width:50px; background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px 5px;" ${!s.checked?'disabled':''} oninput="updateState('${rowId}', 'workers', this.value)"></td>
+            <td>
+              <select id="d-${rowId}" style="background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px;" ${!s.checked?'disabled':''} onchange="updateState('${rowId}', 'difficulty', this.value)">
+                <option value="easy" ${s.difficulty==='easy'?'selected':''}>Asan (Easy)</option>
+                <option value="hard" ${s.difficulty==='hard'?'selected':''}>Çətin (Hard)</option>
+              </select>
+            </td>
+            <td>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <select id="mat-${rowId}" style="background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px; width:80px;" ${!s.checked?'disabled':''} onchange="updateState('${rowId}', 'has_material', this.value === 'true')">
+                  <option value="true" ${s.has_material?'selected':''}>Var</option>
+                  <option value="false" ${!s.has_material?'selected':''}>Yoxdur</option>
+                </select>
+                <input type="number" id="mwait-${rowId}" value="${s.mat_wait_days}" min="0" placeholder="Gün" style="width:80px; background:var(--s1); border:1px solid var(--b1); color:var(--t1); border-radius:4px; padding:2px 5px; display:${s.has_material ? 'none' : 'block'};" ${!s.checked?'disabled':''} oninput="updateState('${rowId}', 'mat_wait_days', this.value)">
+              </div>
+            </td>
+          `;
+        }
+
+        htmlChunks.push(`
+          <tr>
+            <td style="text-align:center"><input type="checkbox" class="plan-cb" value="${rowId}" ${s.checked?'checked':''} onchange="updateState('${rowId}', 'checked', this.checked)"></td>
+            <td><span style="font-family:var(--m);font-size:10.5px;color:var(--t3)">${o.oid}</span></td>
+            <td style="font-size:11.5px">${o.cesid}</td>
+            <td><span style="font-family:var(--m);font-size:11px">${o.miqdarStr}</span></td>
+            ${inputsHtml}
+            <td id="res-days-${rowId}" style="padding: 10px 5px; overflow: visible; white-space: nowrap;">${s.days}</td>
+            <td id="res-start-date-${rowId}" style="color:${s.start_date!=='-'?'var(--blu)':'inherit'}; font-family:var(--m); font-size:11px; padding: 10px 5px; overflow: visible; white-space: nowrap;">${s.start_date}</td>
+            <td id="res-date-${rowId}" style="color:${s.date!=='-'?'var(--grn)':'inherit'}; font-family:var(--m); font-size:11px; padding: 10px 5px; overflow: visible; white-space: nowrap;">${s.date}</td>
+          </tr>
+        `);
+        renderedCount++;
+     }
+  }
+  
+  if (hiddenCount > 0) {
+      htmlChunks.push(`<tr><td colspan="8" style="text-align:center; padding:15px; color:var(--t3); font-size:12px;">+ Daha ${hiddenCount} sifariş var. Axtarışdan istifadə edərək tapın.</td></tr>`);
+  }
+  
+  tbody.innerHTML = htmlChunks.join('');
+}
+
+function toggleAllPlan() {
+  const isChecked = document.getElementById('plan-all-cb').checked;
+  // Only toggle currently rendered rows
+  document.querySelectorAll('#plan-tbody .plan-cb').forEach(cb => {
+    cb.checked = isChecked;
+    updateState(cb.value, 'checked', isChecked);
+  });
+}
+
+function closePlanMod(e) {
+  if(e && e.target.id!=='plan-bd') return;
+  document.getElementById('plan-bd').classList.remove('open');
+}
+
+function calculatePlan() {
+  let current_days = 0;
+  
+  const corabCaps = {
+      'men':   { 'easy': 20, 'hard': 15 },
+      'women': { 'easy': 25, 'hard': 20 },
+      'child': { 'easy': 30, 'hard': 25 }
+  };
+  
+  const underwearCaps = {
+      'boxer':    { 'easy': 1200, 'hard': 1200, 'base_workers': 7 },
+      'hawlubel': { 'easy': 800,  'hard': 800,  'base_workers': 7 },
+      'dods':     { 'easy': 1300, 'hard': 800,  'base_workers': 7 },
+      'mayka':    { 'easy': 2400, 'hard': 2400, 'base_workers': 6 },
+      'tshirt':   { 'easy': 700,  'hard': 700,  'base_workers': 7 }
+  };
+  
+  allPlanOrders.forEach(o => {
+    const rowId = 'ord-' + o.i;
+    const s = planState[rowId];
+    
+    let daily_cap = 0;
+    
+    if (CURRENT_SECTOR === 'corab') {
+      if (s.checked) {
+        daily_cap = corabCaps[s.category][s.difficulty];
+      } else {
+        // Assume factory has ~100 machines (22 * 100)
+        daily_cap = 2200; 
+      }
+    } else if (CURRENT_SECTOR === 'underwear') {
+      if (s.checked) {
+        const workers = parseInt(s.workers) || 6;
+        const diff = s.difficulty;
+        const cat = s.category;
+        const capInfo = underwearCaps[cat];
+        const baseCap = capInfo[diff];
+        daily_cap = (baseCap / capInfo.base_workers) * workers;
+      } else {
+        daily_cap = 1500; // Generic average for unchecked Underwear orders
+        daily_cap = 1500;
+      }
+    } else {
+      const cesid = (o.cesid || '').toLowerCase();
+      let caps = CAPACITIES["default"];
+      for(const key in CAPACITIES) {
+        if(cesid.includes(key.toLowerCase())) {
+           caps = CAPACITIES[key];
+           break;
+        }
+      }
+      if (s.checked) {
+        const workers = parseInt(s.workers) || 10;
+        const cap_for_10 = caps[s.difficulty];
+        daily_cap = (cap_for_10 / 10.0) * workers;
+      } else {
+        daily_cap = 500; 
+      }
+    }
+    
+    const exact_days = daily_cap > 0 ? (o.miqdar / daily_cap) : 0;
+    const days_req = Math.ceil(exact_days);
+    const mat_wait = (!s.has_material) ? parseInt(s.mat_wait_days) || 0 : 0;
+    
+    const order_start_offset = Math.max(current_days, mat_wait);
+    
+    if (s.checked) {
+       const startD = new Date();
+       startD.setDate(startD.getDate() + Math.ceil(order_start_offset));
+       const start_yyyy = startD.getFullYear();
+       const start_mm = String(startD.getMonth() + 1).padStart(2, '0');
+       const start_dd = String(startD.getDate()).padStart(2, '0');
+       const new_start_date = `${start_yyyy}-${start_mm}-${start_dd}`;
+
+       const d = new Date();
+       d.setDate(d.getDate() + Math.ceil(order_start_offset) + days_req);
+       const yyyy = d.getFullYear();
+       const mm = String(d.getMonth() + 1).padStart(2, '0');
+       const dd = String(d.getDate()).padStart(2, '0');
+       const new_deadline = `${yyyy}-${mm}-${dd}`;
+       
+       s.days = days_req + " gün";
+       s.start_date = new_start_date;
+       s.date = new_deadline;
+    } else {
+       s.days = '-';
+       s.start_date = '-';
+       s.date = '-';
+    }
+    
+    current_days += exact_days;
+  });
+  
+  renderPlanTable();
+  document.getElementById('btn-apply-plan').style.display = 'inline-flex';
+}
+
+function applyPlan() {
+  allPlanOrders.forEach(o => {
+     const rowId = 'ord-' + o.i;
+     const s = planState[rowId];
+     if (s.checked && s.date !== '-') {
+        const tds = o.origTr.querySelectorAll('td');
+        if(tds.length >= 6) {
+           let infoStr = `Plan: ${s.start_date} / ${s.date}`;
+           if (!s.has_material && parseInt(s.mat_wait_days) > 0) {
+              infoStr += ` (Xammal: +${s.mat_wait_days} gün)`;
+           }
+           tds[5].innerHTML += `<br><span style="color:var(--grn);font-weight:500;font-size:10px">${infoStr}</span>`;
+        }
+     }
+  });
+  closePlanMod();
+}
+
+</script>
+
+<!-- PLAN MODAL -->
+<div class="backdrop" id="plan-bd" onclick="closePlanMod(event)">
+  <div class="modal" onclick="event.stopPropagation()" style="width:1100px; max-width:95vw;">
+    <div class="m-hdr" style="flex-direction:column; align-items:stretch; gap:12px; padding:16px 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div class="m-ttl">Sifarişlərin Planlanması</div>
+          <div class="m-oid" style="margin-top:4px; font-size:11px;">Müştəri, sifariş nömrəsi və ya məhsul çeşidinə görə axtarın.</div>
+        </div>
+        <button class="m-x" onclick="closePlanMod()">×</button>
+      </div>
+      <input type="text" id="plan-search" placeholder="Sifariş, çeşid və ya müştəri axtar..." style="width:100%; background:var(--s2); border:1px solid var(--b1); color:var(--t1); border-radius:6px; padding:8px 12px; font-size:12px;" oninput="renderPlanTable()">
+    </div>
+    <div class="m-body" style="max-height:60vh; overflow-y:auto; padding:0;">
+      <table class="orders-tbl" style="width:100%; text-align:left;">
+        <thead style="position:sticky; top:0; background:var(--s2); z-index:10;">
+          <tr>
+            <th style="width:40px; text-align:center; padding:10px 0;"><input type="checkbox" id="plan-all-cb" onclick="toggleAllPlan()"></th>
+            <th style="width:130px; padding:10px 8px;">Sifariş №</th>
+            <th style="padding:10px 8px;">Çeşid</th>
+            <th style="width:60px; padding:10px 8px;">Miqdar</th>
+            <th style="width:115px; padding:10px 8px;" id="th-col0">Kategoriya</th>
+            <th style="width:90px; padding:10px 8px;" id="th-col1">İşçi Sayı</th>
+            <th style="width:95px; padding:10px 8px;" id="th-col2">Çətinlik</th>
+            <th style="width:105px; padding:10px 8px;">Xammal?</th>
+            <th style="width:80px; padding:10px 8px;">Təx. Gün</th>
+            <th style="width:95px; padding:10px 8px;">Başlama</th>
+            <th style="width:95px; padding:10px 8px;">Bitiş Tarixi</th>
+          </tr>
+        </thead>
+        <tbody id="plan-tbody">
+        </tbody>
+      </table>
+    </div>
+    <div class="m-ft" style="padding:14px 20px; border-top:1px solid var(--b1); display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn" onclick="closePlanMod()">Bağla</button>
+      <button class="btn btn-a" onclick="calculatePlan()">Hesabla</button>
+      <button class="btn btn-a" id="btn-apply-plan" style="display:none; background:var(--grn-bg); color:var(--grn); border-color:rgba(93,219,168,.2)" onclick="applyPlan()">Təsdiqlə və Yadda Saxla</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

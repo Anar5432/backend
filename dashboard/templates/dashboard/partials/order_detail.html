@@ -1,0 +1,81 @@
+<div class="detail-header">
+  <button class="close-detail" onclick="closeOrderDetail()">✕</button>
+  <div class="detail-id">Sifariş #{{ detail.header.sen_no }}</div>
+  <div class="detail-customer">{{ detail.header.kontra_name|default:"Müştəri yoxdur" }}</div>
+  <div class="detail-date">{{ detail.header.tarix }}</div>
+</div>
+
+<div class="detail-summary">
+  <div class="summary-box">
+    <div class="summary-label">Sifariş Məbləği</div>
+    <div class="summary-value">₼{{ detail.header.tam_yek|default:"0.00"|floatformat:2 }}</div>
+  </div>
+  <div class="summary-box">
+    <div class="summary-label">Endirim</div>
+    <div class="summary-value">₼{{ detail.header.guz_yek|default:"0.00"|floatformat:2 }}</div>
+  </div>
+  <div class="summary-box">
+    <div class="summary-label">Ödəniş Tarixi</div>
+    <div class="summary-value">{{ detail.header.od_tar|default:"—" }}</div>
+  </div>
+</div>
+
+{% if detail.header.serh %}
+<div class="detail-notes">
+  <strong>Qeyd:</strong> {{ detail.header.serh }}
+</div>
+{% endif %}
+
+<div class="detail-section-title">Məhsullar ({{ detail.lines|length }})</div>
+<div class="detail-products">
+  <table class="detail-table">
+    <thead>
+      <tr>
+        <th>Məhsul</th>
+        <th class="text-right">Qiymət</th>
+        <th class="text-right">Sifariş</th>
+        <th class="text-right">Təhvil</th>
+        <th class="text-right">Qalıq</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for line in detail.lines %}
+      <tr>
+        <td>
+          <div class="prod-name">{{ line.product_name }}</div>
+          <div class="prod-cat">{{ line.category|default:"Kategoriyasız" }}</div>
+        </td>
+        <td class="text-right">₼{{ line.unit_price }}</td>
+        <td class="text-right">{{ line.qty_ordered }}</td>
+        <td class="text-right text-success">{{ line.qty_delivered }}</td>
+        <td class="text-right text-danger"><b>{{ line.qty_remaining }}</b></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="detail-section-title">İstehsal Partiyaları ({{ detail.productions|length }})</div>
+{% if detail.productions %}
+<div class="detail-productions">
+  {% for prod in detail.productions %}
+  <div class="prod-batch">
+    <div class="batch-header">
+      <span class="batch-id">Tapşırıq #{{ prod.prod_no }}</span>
+      <span class="batch-date">{{ prod.tarix }}</span>
+    </div>
+    <div class="batch-route">
+      {{ prod.from_warehouse|default:"Məlum deyil" }} ➔ {{ prod.to_warehouse|default:"Məlum deyil" }}
+    </div>
+    <div class="batch-footer">
+      <span class="batch-qty">{{ prod.prod_qty|floatformat:0 }} ədəd</span>
+      <span class="batch-phase">
+        {{ prod.phase_name|default:"İstehsal Bitib" }}
+      </span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state-small">Bu sifarişə bağlı istehsal tapşırığı tapılmadı.</div>
+{% endif %}

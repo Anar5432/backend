@@ -1,0 +1,52 @@
+<!-- KPI CARDS STRIP -->
+<div class="kpi-strip">
+
+  <div class="kpi-card kpi-blue">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-content">
+      <div class="kpi-value">{{ kpis.today_orders }}</div>
+      <div class="kpi-label">Bu günkü sifarişlər</div>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-green">
+    <div class="kpi-icon">₼</div>
+    <div class="kpi-content">
+      <div class="kpi-value">{{ kpis.revenue_mtd|floatformat:0 }}</div>
+      <div class="kpi-label">Bu ay gəlir (AZN)</div>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-amber">
+    <div class="kpi-icon">⚙️</div>
+    <div class="kpi-content">
+      <div class="kpi-value">{{ kpis.active_prod_orders }}</div>
+      <div class="kpi-label">Aktiv istehsal</div>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-red">
+    <div class="kpi-icon">📋</div>
+    <div class="kpi-content">
+      <div class="kpi-value">{{ kpis.backlog_units|floatformat:0 }}</div>
+      <div class="kpi-label">Gözləyən cüt</div>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-purple">
+    <div class="kpi-icon">🏭</div>
+    <div class="kpi-content">
+      <div class="kpi-value">{{ kpis.finished_stock|floatformat:0 }}</div>
+      <div class="kpi-label">Hazır stok (cüt)</div>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-teal">
+    <div class="kpi-icon">👥</div>
+    <div class="kpi-content">
+      <div class="kpi-value">{{ kpis.active_customers }}</div>
+      <div class="kpi-label">Aktiv müştəri</div>
+    </div>
+  </div>
+
+</div>

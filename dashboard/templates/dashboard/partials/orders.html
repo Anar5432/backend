@@ -1,0 +1,295 @@
+{% spaceless %}
+{% if standard_productions %}
+<div class="co-card" style="margin-bottom: 12px; border-color: color-mix(in srgb, var(--amb) 30%, var(--b1));">
+  <div class="co-hdr" style="background: rgba(245,200,66,.04);">
+    <div class="co-av" style="background: rgba(245,200,66,.15); color: var(--amb); font-size: 14px;">📦</div>
+    <div class="co-info">
+      <div class="co-nm" style="color: var(--amb);">STANDART İSTEHSAL (ANBAR)</div>
+      <div class="co-meta">
+        <span style="color:var(--t3)">Davamlı anbar ehtiyatı istehsalı</span>
+      </div>
+    </div>
+    <div class="co-pills">
+      <div class="cpill" style="background: rgba(245,200,66,.1);">
+        <span class="cpill-v" style="color:var(--amb)">{{ standard_productions|length }}</span>
+        <span class="cpill-l" style="color:var(--amb)">sənəd</span>
+      </div>
+    </div>
+    <svg class="co-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8l5 5 5-5"/></svg>
+  </div>
+  <div class="co-body">
+    <table class="orders-tbl">
+      <thead>
+        <tr>
+          <th>İstehsal №</th>
+          <th>Çeşid</th>
+          <th>Miqdar</th>
+          <th>Cari etap</th>
+          <th>Status</th>
+          <th>Tarix</th>
+        </tr>
+      </thead>
+      <tbody id="std-tbody">
+        {% for prod in standard_productions %}
+        <tr onclick="openModal(this)"
+            data-oid="IST-{{ prod.id }}"
+            data-cesid="{{ prod.cesid }}"
+            data-miqdar="{{ prod.miqdar }}"
+            data-tarix="{{ prod.tarix }}"
+            data-status="{{ prod.status }}"
+            data-sector="{{ prod.sector_name }}"
+            data-etap="{{ prod.etapIdx }}"
+            data-stage-id="{{ prod.stage_id }}"
+            data-reng="{{ prod.reng }}">
+          <td style="width:100px"><span style="font-family:var(--m);font-size:10.5px;color:var(--t3)">{{ prod.id }}</span></td>
+          <td>
+            <div style="display:flex; flex-direction:column; gap:4px">
+                <span style="display:inline-flex;align-items:center;gap:6px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ prod.reng }};display:inline-block;flex-shrink:0"></span>
+                  {{ prod.cesid }}
+                </span>
+            </div>
+          </td>
+          <td style="width:90px"><span style="font-family:var(--m);font-size:11px">{{ prod.miqdar }} {% if sector == 'corab' %}cüt{% else %}əd.{% endif %}</span></td>
+          <td style="width:160px">
+            <div class="etap-cell">
+              <span class="etap-nm">{{ prod.phase_name }}</span>
+            </div>
+          </td>
+          <td style="width:120px">
+            {% if prod.status == 'Tamamlandı' %}
+              <span class="badge bg"><span class="bd"></span>{{ prod.status }}</span>
+            {% else %}
+              <span class="badge bb"><span class="bd"></span>{{ prod.status }}</span>
+            {% endif %}
+          </td>
+          <td style="width:100px"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{{ prod.tarix }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div id="companies-container">
+{% for company in companies %}
+<div class="co-card company-card">
+  <div class="co-hdr">
+    <div class="co-av" style="background:{{ company.bg }};color:{{ company.c }}">{{ company.short }}</div>
+    <div class="co-info">
+      <div class="co-nm">{{ company.name }}</div>
+      <div class="co-meta">
+        {% if company.total_ordered > 0 or company.total_debt != 0 %}
+          <div style="display:inline-flex; align-items:center; gap:4px; color:{% if company.total_debt > 0 %}var(--red){% elif company.total_debt < 0 %}var(--grn){% else %}var(--t2){% endif %}; font-weight: 500; cursor:help;" title="Ümumi Sifariş: {{ company.total_ordered|floatformat:'0' }} ₼ | Ödənilib: {{ company.total_paid|floatformat:'0' }} ₼ | {% if company.total_debt > 0 %}Qalıq Borc{% elif company.total_debt < 0 %}Müsbət Balans{% else %}Borc Yoxdur{% endif %}: {{ company.total_debt|stringformat:'f'|cut:'-'|slice:':-7'|default:'0' }} ₼">
+            {% if company.total_debt > 0 %}
+              Borc: {{ company.total_debt|floatformat:"0" }} ₼
+            {% elif company.total_debt < 0 %}
+              Balans: {{ company.total_debt|stringformat:"f"|cut:"-"|slice:":-7" }} ₼
+            {% else %}
+              Borc: 0 ₼
+            {% endif %}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div><span style="color:var(--t3)"> · </span>
+        {% endif %}
+        {% if company.stats.late > 0 %}<span style="color:var(--red)">{{ company.stats.late }} gecikmiş</span>{% endif %}
+        {% if company.stats.late > 0 and company.stats.active > 0 %}<span style="color:var(--t3)"> · </span>{% endif %}
+        {% if company.stats.active > 0 %}<span style="color:var(--t2)">{{ company.stats.active }} davam edir</span>{% endif %}
+        {% if company.stats.wait > 0 %}<span style="color:var(--t3)"> · </span><span style="color:var(--amb)">{{ company.stats.wait }} gözləyir</span>{% endif %}
+        {% if company.stats.done > 0 %}<span style="color:var(--t3)"> · </span><span style="color:var(--grn)">{{ company.stats.done }} hazır</span>{% endif %}
+      </div>
+    </div>
+    <div class="co-pills">
+      <div class="cpill">
+        <span class="cpill-v" style="color:var(--acc)">{{ company.stats.total }}</span>
+        <span class="cpill-l">sifariş</span>
+      </div>
+      <div class="cpill">
+        <span class="cpill-v" style="color:{% if company.stats.late > 0 %}var(--red){% else %}var(--t3){% endif %}">{{ company.stats.late }}</span>
+        <span class="cpill-l">gecikmiş</span>
+      </div>
+      <div class="cpill">
+        <span class="cpill-v" style="color:{% if company.stats.done > 0 %}var(--grn){% else %}var(--t3){% endif %}">{{ company.stats.done }}</span>
+        <span class="cpill-l">hazır</span>
+      </div>
+    </div>
+    <svg class="co-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8l5 5 5-5"/></svg>
+  </div>
+  <div class="co-body">
+    <table class="orders-tbl">
+      <thead>
+        <tr>
+          <th>Sifariş №</th>
+          <th>Çeşid</th>
+          <th>Miqdar</th>
+          <th>Cari etap</th>
+          <th>Status</th>
+          <th>Sif. Tarixi</th>
+          {% comment %} {% if sector == 'isci' %}<th>Təhvil (Təxm.)</th>{% endif %} {% endcomment %}
+        </tr>
+      </thead>
+      {% regroup company.orders by id as grouped_orders %}
+      {% for group in grouped_orders %}
+      <tbody class="order-group {% if group.list|length > 1 %}has-splits{% endif %}">
+        {% for order in group.list %}
+        <tr onclick="openModal(this)"
+            data-oid="{{ order.id }}"
+            data-cesid="{{ order.cesid }}"
+            data-miqdar="{{ order.miqdar }}"
+            data-tarix="{{ order.tarix }}"
+            data-status="{{ order.status }}"
+            data-sector="{{ order.sector_name }}"
+            data-etap="{{ order.etapIdx }}"
+            data-stage-id="{{ order.stage_id }}"
+            data-reng="{{ order.reng }}"
+            data-mat-pct="{{ order.material_readiness_pct }}"
+            data-materials="{{ order.materials_json|escape }}">
+          <td style="width:100px"><span style="font-family:var(--m);font-size:10.5px;color:var(--t3)">{{ order.id }}</span></td>
+          <td>
+            <div style="display:flex; flex-direction:column; gap:4px">
+                <span style="display:inline-flex;align-items:center;gap:6px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ order.reng }};display:inline-block;flex-shrink:0"></span>
+                  {{ order.cesid }}
+                </span>
+                {% if order.stage_id == '0' or order.stage_id == '1' %}
+                    {% if order.material_readiness_pct == 100 %}
+                        <span style="font-size:10px; color:var(--grn); background:rgba(46,212,119,0.1); padding:2px 6px; border-radius:4px; align-self:flex-start; display:inline-flex; align-items:center;">
+                            <svg style="width:10px;height:10px;margin-right:4px;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                            Xammal 100% Hazır
+                        </span>
+                    {% else %}
+                        <span style="font-size:10px; color:var(--red); background:rgba(255,87,87,0.1); padding:2px 6px; border-radius:4px; align-self:flex-start; display:inline-flex; align-items:center;">
+                            <svg style="width:10px;height:10px;margin-right:4px;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            Xammal Çatışmır ({{ order.material_readiness_pct }}%)
+                        </span>
+                    {% endif %}
+                {% endif %}
+            </div>
+          </td>
+          <td style="width:90px"><span style="font-family:var(--m);font-size:11px">{{ order.miqdar }} {% if sector == 'corab' %}cüt{% else %}əd.{% endif %}</span></td>
+          <td style="width:160px">
+            <div class="etap-cell" style="width: 100%;">
+              <span class="etap-nm">{{ order.phase_name }}</span>
+              {% if sector == 'isci' %}
+                <div style="display:flex; gap:2px; margin-top:6px; width:100%;">
+                  <!-- Material (Stage 1) -->
+                  <div style="flex:1; background:var(--b2); height:6px; border-radius:3px; overflow:hidden; position:relative;" title="Xammal/Material: {{ order.material_readiness_pct }}%">
+                    <div style="width:{{ order.material_readiness_pct }}%; background:var(--acc); height:100%;"></div>
+                  </div>
+                  <!-- Kəsim (Stage 2) -->
+                  <div style="flex:1; background:var(--b2); height:6px; border-radius:3px; overflow:hidden; position:relative;" title="Kəsim: {{ order.kesim_pct }}%">
+                    <div style="width:{{ order.kesim_pct }}%; background:var(--grn); height:100%;"></div>
+                  </div>
+                  <!-- Tikiş (Stage 3) -->
+                  <div style="flex:1; background:var(--b2); height:6px; border-radius:3px; overflow:hidden; position:relative;" title="Tikiş/Mayka: {{ order.tikis_pct }}%">
+                    <div style="width:{{ order.tikis_pct }}%; background:var(--amb); height:100%;"></div>
+                  </div>
+                  <!-- Hazır (Stage 4) -->
+                  <div style="flex:1; background:var(--b2); height:6px; border-radius:3px; overflow:hidden; position:relative;" title="Hazır Məhsul: {% if order.status == 'Tamamlandı' %}100{% else %}0{% endif %}%">
+                    <div style="width:{% if order.status == 'Tamamlandı' %}100{% else %}0{% endif %}%; background:var(--pur); height:100%;"></div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="mini-segs">
+                  {% for st in stages %}
+                    {% if st.id != 'all' %}
+                      <div class="mseg {% if forloop.counter0 < order.etapIdx|add:1 %}done{% elif forloop.counter0 == order.etapIdx|add:1 %}{% if order.status == 'Tamamlandı' %}done{% else %}cur{% endif %}{% endif %}"></div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </td>
+          <td style="width:120px">
+            {% if order.status == 'Tamamlandı' %}
+              <span class="badge bg"><span class="bd"></span>{{ order.status }}</span>
+            {% elif order.status == 'Gecikmiş' %}
+              <span class="badge br"><span class="bd"></span>{{ order.status }}</span>
+            {% elif order.status == 'Davam edir' %}
+              <span class="badge bb"><span class="bd"></span>{{ order.status }}</span>
+            {% else %}
+              <span class="badge ba"><span class="bd"></span>{{ order.status }}</span>
+            {% endif %}
+          </td>
+          <td style="width:100px"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{{ order.tarix }}</span></td>
+          {% comment %}
+          {% if sector == 'isci' %}
+          <td style="width:100px">
+            {% if order.status != 'Tamamlandı' and order.estimated_delivery_date %}
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-family:var(--m);font-size:11px;color:var(--acc);background:rgba(91,173,240,.1);padding:4px 6px;border-radius:4px;white-space:nowrap;">
+                {{ order.estimated_delivery_date }}
+              </span>
+              {% if not order.material_ready %}
+                <span title="Xammal/Material çatışmır" style="font-size:13px">⚠️</span>
+              {% endif %}
+            </div>
+            {% else %}
+            <span style="font-family:var(--m);font-size:11px;color:var(--t3);">-</span>
+            {% endif %}
+          </td>
+          {% endif %}
+          {% endcomment %}
+        </tr>
+        {% endfor %}
+        {% if group.list|length > 1 %}
+        <tr class="spacer-row" style="background:var(--bg);pointer-events:none"><td colspan="7" style="height:14px;padding:0;border:none"></td></tr>
+        {% endif %}
+      </tbody>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% empty %}
+<div style="text-align:center;padding:50px 0;color:var(--t3);font-size:13px">
+  Sifariş tapılmadı
+</div>
+{% endfor %}
+</div>
+
+<style>
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0;
+  margin-top: 8px;
+}
+.page-btn {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  color: var(--t2);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: var(--f);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.page-btn:hover:not(:disabled) {
+  background: var(--s3);
+  color: var(--t1);
+  border-color: var(--b2);
+}
+.page-btn.active {
+  background: color-mix(in srgb, var(--acc) 15%, transparent);
+  color: var(--acc);
+  border-color: var(--acc);
+}
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.page-info {
+  font-size: 12px;
+  color: var(--t3);
+  margin: 0 10px;
+  font-family: var(--m);
+}
+</style>
+{% endspaceless %}

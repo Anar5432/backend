@@ -1,0 +1,52 @@
+<div class="charts-grid">
+
+  <!-- Chart 1: Monthly Trend -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Son 6 Ayın Trendi (Satış / İstehsal)</div>
+    </div>
+    <div class="chart-body">
+      <canvas id="trendChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 2: Top Products -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Top 10 Satılan Məhsullar (Son 60 gün)</div>
+    </div>
+    <div class="chart-body">
+      <table class="top-products-table">
+        <thead>
+          <tr>
+            <th>Məhsul</th>
+            <th>Kateqoriya</th>
+            <th class="text-right">Satış (cüt)</th>
+            <th class="text-right">Gəlir</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in top_products %}
+          <tr>
+            <td>{{ product.product }}</td>
+            <td><span class="cat-badge-small">{{ product.category }}</span></td>
+            <td class="text-right">{{ product.qty_sold|floatformat:0 }}</td>
+            <td class="text-right">₼{{ product.revenue|floatformat:0 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chart 3: Stock Levels -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Anbar Stokları</div>
+    </div>
+    <div class="chart-body">
+      <canvas id="stockChart"></canvas>
+    </div>
+  </div>
+
+</div>

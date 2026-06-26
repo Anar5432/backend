@@ -3,7 +3,6 @@ __pycache__/
 *.txt
 !requirements.txt
 *.csv
-*.html
 *.dbml
 *.db
 !factory.db

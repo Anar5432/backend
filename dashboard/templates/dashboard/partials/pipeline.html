@@ -1,0 +1,113 @@
+<!-- PRODUCTION PIPELINE BAR -->
+<div class="pipeline-bar">
+  <div class="pipeline-title">İSTEHSAL KONVEYERİ</div>
+
+  <div class="pipeline-stages">
+
+    <!-- Stage 0: Raw Materials -->
+    <div class="pipeline-stage stage-raw">
+      <div class="stage-icon">📦</div>
+      <div class="stage-name">Xammal Anbarı</div>
+      <div class="stage-count">{{ pipeline.raw_stock|floatformat:0 }} <small>ədəd</small></div>
+      <div class="stage-label">Corab sexinə gözləyir</div>
+    </div>
+
+    <div class="pipeline-arrow">▶</div>
+
+    <!-- Faza 1 -->
+    {% for phase in pipeline.phases %}
+      {% if phase.faza == 1 %}
+      <div class="pipeline-stage stage-f1 active">
+        <div class="stage-icon">🧶</div>
+        <div class="stage-name">Faza 1 — Hörgü</div>
+        <div class="stage-count">{{ phase.shift_count }} <small>növbə</small></div>
+        <div class="stage-label">Bu ay ₼{{ phase.total_cost|floatformat:0 }}</div>
+      </div>
+      {% endif %}
+    {% empty %}
+      <div class="pipeline-stage stage-f1">
+        <div class="stage-icon">🧶</div>
+        <div class="stage-name">Faza 1 — Hörgü</div>
+        <div class="stage-count">0 <small>növbə</small></div>
+        <div class="stage-label">Bu ay fəaliyyət yoxdur</div>
+      </div>
+    {% endfor %}
+
+    <div class="pipeline-arrow">▶</div>
+
+    <!-- Faza 4 -->
+    {% for phase in pipeline.phases %}
+      {% if phase.faza == 4 %}
+      <div class="pipeline-stage stage-f4 active">
+        <div class="stage-icon">⚡</div>
+        <div class="stage-name">Faza 4 — Form</div>
+        <div class="stage-count">{{ phase.shift_count }} <small>növbə</small></div>
+        <div class="stage-label">Bu ay ₼{{ phase.total_cost|floatformat:0 }}</div>
+      </div>
+      {% endif %}
+    {% empty %}
+      <div class="pipeline-stage stage-f4">
+        <div class="stage-icon">⚡</div>
+        <div class="stage-name">Faza 4 — Form</div>
+        <div class="stage-count">0 <small>növbə</small></div>
+        <div class="stage-label">Bu ay fəaliyyət yoxdur</div>
+      </div>
+    {% endfor %}
+
+    <div class="pipeline-arrow">▶</div>
+
+    <!-- Faza 5 -->
+    {% for phase in pipeline.phases %}
+      {% if phase.faza == 5 %}
+      <div class="pipeline-stage stage-f5 active">
+        <div class="stage-icon">📦</div>
+        <div class="stage-name">Faza 5 — Qablaşdırma</div>
+        <div class="stage-count">{{ phase.shift_count }} <small>növbə</small></div>
+        <div class="stage-label">Bu ay ₼{{ phase.total_cost|floatformat:0 }}</div>
+      </div>
+      {% endif %}
+    {% empty %}
+      <div class="pipeline-stage stage-f5">
+        <div class="stage-icon">📦</div>
+        <div class="stage-name">Faza 5 — Qablaşdırma</div>
+        <div class="stage-count">0 <small>növbə</small></div>
+        <div class="stage-label">Bu ay fəaliyyət yoxdur</div>
+      </div>
+    {% endfor %}
+
+    <div class="pipeline-arrow">▶</div>
+
+    <!-- Finished Goods -->
+    <div class="pipeline-stage stage-fg">
+      <div class="stage-icon">✅</div>
+      <div class="stage-name">Hazır Məhsul</div>
+      <div class="stage-count">{{ pipeline.fg_stock|floatformat:0 }} <small>cüt</small></div>
+      <div class="stage-label">Anbarda stok</div>
+    </div>
+
+    <div class="pipeline-arrow">▶</div>
+
+    <!-- Delivered -->
+    <div class="pipeline-stage stage-delivered">
+      <div class="stage-icon">🚚</div>
+      <div class="stage-name">Çatdırılmış</div>
+      <div class="stage-count">—</div>
+      <div class="stage-label">Müştərilərə</div>
+    </div>
+
+  </div>
+
+  <!-- Today's shifts quick view -->
+  {% if shifts %}
+  <div class="pipeline-shifts-today">
+    <span class="shifts-today-label">Bu günün növbələri:</span>
+    {% for shift in shifts %}
+    <span class="shift-chip"
+          style="background: {% if shift.faza == 1 %}rgba(99,102,241,0.2); border-color:#6366f1; color:#a5b4fc{% elif shift.faza == 4 %}rgba(16,185,129,0.2); border-color:#10b981; color:#6ee7b7{% else %}rgba(59,130,246,0.2); border-color:#3b82f6; color:#93c5fd{% endif %}">
+      F{{ shift.faza }} — {{ shift.operator|default:"?" }} — ₼{{ shift.cost|floatformat:0 }}
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
