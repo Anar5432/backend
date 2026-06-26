@@ -39,20 +39,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'socks_dashboard.wsgi.application'
 
 # SQLite — Django app database (sessions, cache, config)
-if 'RENDER' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '/data/factory.db',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'factory.db',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'factory.db',
-        }
-    }
+}
 
 # SQL Server — ERP source (read-only, not a Django managed DB)
 MSSQL_CONFIG = {
