@@ -52,7 +52,7 @@ MSSQL_CONFIG = {
     'DATABASE': 'BTFERPDB',
     'USERNAME': 'User1',
     'PASSWORD': 'bfzY7835WCS72M',
-    'DRIVER': 'SQL Server',
+    'DRIVER': 'ODBC Driver 18 for SQL Server' if 'RENDER' in os.environ else 'SQL Server',
     'TRUST_SERVER_CERTIFICATE': 'yes',
 }
 
