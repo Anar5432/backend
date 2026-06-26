@@ -4,7 +4,6 @@ Socks classes: 21 (CORAB), 29 (QADIN CORABI), 30 (UŞAQ CORABI)
 Socks warehouses: 2 (Raw Mat), 6 (Finished Goods), 7 (Binə Store),
                   11 (Sədərək Store), 17 (Workshop), 18 (Staging)
 """
-import pyodbc
 from django.core.cache import cache
 import json
 import copy
