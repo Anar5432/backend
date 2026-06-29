@@ -132,7 +132,7 @@
       {% for group in grouped_orders %}
       <tbody class="order-group {% if group.list|length > 1 %}has-splits{% endif %}">
         {% for order in group.list %}
-        <tr onclick="openModal(this)"
+        <tr class="order-row" onclick="openModal(this)"
             data-oid="{{ order.id }}"
             data-cesid="{{ order.cesid }}"
             data-miqdar="{{ order.miqdar }}"
@@ -231,6 +231,41 @@
           {% endif %}
           {% endcomment %}
         </tr>
+        {% if order.yms %}
+          {% for ym in order.yms %}
+          <tr class="ym-row" style="background: rgba(0,0,0,0.02); border-left: 2px solid var(--b2);"
+              onclick="openModal(this)"
+              data-oid="{{ ym.id }}"
+              data-cesid="{{ ym.cesid }}"
+              data-miqdar="{{ ym.miqdar }}"
+              data-tarix="{{ ym.tarix }}"
+              data-status="{{ ym.status }}"
+              data-sector="{{ ym.sector_name }}"
+              data-etap="{{ ym.etapIdx }}"
+              data-stage-id="{{ ym.stage_id }}"
+              data-reng="{{ ym.reng }}">
+            <td style="width:100px; padding-left:24px;">
+              <span style="font-family:var(--m);font-size:10px;color:var(--t3)">↳ {{ ym.id }}</span>
+            </td>
+            <td>
+              <div style="display:flex; flex-direction:column; gap:4px; opacity:0.8">
+                  <span style="display:inline-flex;align-items:center;gap:6px; font-size:12px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:{{ ym.reng }};display:inline-block;flex-shrink:0"></span>
+                    {{ ym.cesid }}
+                  </span>
+              </div>
+            </td>
+            <td style="width:90px; opacity:0.8"><span style="font-family:var(--m);font-size:11px">{{ ym.miqdar }} {% if sector == 'corab' %}cüt{% else %}əd.{% endif %}</span></td>
+            <td style="width:160px; opacity:0.8">
+              <span class="etap-nm" style="font-size:11px">{{ ym.phase_name }}</span>
+            </td>
+            <td style="width:120px; opacity:0.8">
+              <span class="badge bb" style="padding:2px 6px; font-size:10px;"><span class="bd"></span>Bileşən</span>
+            </td>
+            <td style="width:100px; opacity:0.8"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{{ ym.tarix }}</span></td>
+          </tr>
+          {% endfor %}
+        {% endif %}
         {% endfor %}
         {% if group.list|length > 1 %}
         <tr class="spacer-row" style="background:var(--bg);pointer-events:none"><td colspan="7" style="height:14px;padding:0;border:none"></td></tr>

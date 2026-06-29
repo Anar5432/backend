@@ -508,20 +508,37 @@
 
           tbodys.forEach(tbody => {
               let visibleRowsInTbody = 0;
-              const rows = tbody.querySelectorAll('tr:not(.spacer-row)');
+              const orderRows = tbody.querySelectorAll('tr.order-row');
               
-              rows.forEach(row => {
-                  const rowStageId = row.getAttribute('data-stage-id');
-                  const rowText = norm(row.textContent);
+              orderRows.forEach(orderRow => {
+                  let yms = [];
+                  let sibling = orderRow.nextElementSibling;
+                  while(sibling && sibling.classList.contains('ym-row')) {
+                      yms.push(sibling);
+                      sibling = sibling.nextElementSibling;
+                  }
+
+                  const rowStageId = orderRow.getAttribute('data-stage-id');
+                  const rowText = norm(orderRow.textContent);
+                  
+                  let anyYmSearchMatch = false;
+                  yms.forEach(ym => {
+                      if (norm(ym.textContent).includes(query)) {
+                          anyYmSearchMatch = true;
+                      }
+                  });
+
                   const stageMatch = (activeStageId === 'all' || rowStageId === activeStageId);
-                  const searchMatch = cardMatchesSearch || rowText.includes(query);
+                  const searchMatch = cardMatchesSearch || rowText.includes(query) || anyYmSearchMatch;
     
                   if (stageMatch && searchMatch) {
-                      row.style.display = '';
+                      orderRow.style.display = '';
                       visibleRowsInTbody++;
                       visibleRowsInCard++;
+                      yms.forEach(ym => ym.style.display = ''); // Show YMs if parent is shown
                   } else {
-                      row.style.display = 'none';
+                      orderRow.style.display = 'none';
+                      yms.forEach(ym => ym.style.display = 'none');
                   }
               });
               
